@@ -1,0 +1,34 @@
+---
+- name: Set control node hostname fact
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Get control node hostname
+      ansible.builtin.command: hostname
+      register: control_node_hostname
+      delegate_to: localhost
+      run_once: true
+
+    - name: Set fact for control node hostname
+      set_fact:
+        control_node_hostname: "{{ control_node_hostname.stdout }}"
+
+- name: Update and reboot servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update all packages (Debian)
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Update all packages (CentOS/RedHat)
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Reboot the server
+      ansible.builtin.reboot:
+      when: ansible_nodename != hostvars['localhost']['control_node_hostname']

@@ -1,0 +1,26 @@
+[splunk]
+{% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'splunk' %}
+{{ instance_name }}.{{domain}}
+{% endfor %}
+
+[wklds]
+{% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'linuxWkld' %}
+{{ instance_name }}.{{domain}}
+{% endfor %}
+
+[pce]
+{% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'pce' %}
+{{ instance_name }}.{{domain}}
+{% endfor %}
+
+[pce:vars]
+org="{{ org }}"
+user_full_name="{{ user_full_name }}"
+user_email="{{ user_email }}"  
+domain="{{ domain }}"
+user_pwd="{{ user_pwd }}"
+sdek="HN45NIRfeURhceajznWpmg=="
+
+[all:vars]
+ansible_user=ec2-user
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'

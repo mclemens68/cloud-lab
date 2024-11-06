@@ -1,0 +1,32 @@
+[web]
+{% for instance_name, instance in linuxVMs.items() if instance.tags.type == 'web' %}
+{{ instance_name }}{{ dnsSuffix }}.{{domain}}
+{% endfor %}
+
+[web:vars]
+port=443
+
+[app]
+{% for instance_name, instance in linuxVMs.items() if instance.tags.type == 'app' %}
+{{ instance_name }}{{ dnsSuffix }}.{{domain}}
+{% endfor %}
+
+[app:vars]
+port=8080
+
+[db]
+{% for instance_name, instance in linuxVMs.items() if instance.tags.type == 'db' %}
+{{ instance_name }}{{ dnsSuffix }}.{{domain}}
+{% endfor %}
+
+[db:vars]
+port=3306
+
+[linux:children]
+web
+app
+db
+
+[linux:vars]
+ansible_user=ubuntu
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'

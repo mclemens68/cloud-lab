@@ -1,0 +1,49 @@
+- name: Load AWS YAML file
+  include_vars:
+    file: "{{ vars.aws_config_file }}"
+    name: aws_data
+    
+- name: change hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+  become: true
+
+- name: copy traffic-generator executable
+  ansible.builtin.copy:
+    src: traffic-generator
+    dest: /opt/
+    mode: '0755'
+  become: true
+
+- name: configure the traffic-generator service
+  template:
+    src: traffic-generator.service.j2
+    dest: /etc/systemd/system/traffic-generator.service
+  become: true
+
+- name: start and enable the service
+  service:
+    name: traffic-generator
+    state: started
+    enabled: yes
+  become: true
+
+- name: Ensure the /etc/traffic-generator/ directory exists
+  file:
+    path: /etc/traffic-generator/
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: true
+
+- name: copy traffic-generator traffic file
+  template:
+    src: traffic.csv.j2
+    dest: /etc/traffic-generator/traffic.csv
+
+- name: run traffic every 10 minutes
+  cron:
+    name: traffic generator
+    minute: "*/10"  # Run every 10 minutes
+    job: "/opt/traffic-generator traffic /etc/traffic-generator/traffic.csv"

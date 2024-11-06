@@ -1,0 +1,53 @@
+---
+- name: Setup hosts files based on templates
+  hosts: localhost
+  tags:
+    - never
+    - localhost
+  gather_facts: no
+  vars_files:
+    - vars.yaml
+  roles:
+    - localhost
+  
+- name: Apply base configuration for aliases and SSH keys
+  hosts: all
+  tags:
+    - always
+  vars_files:
+    - vars.yaml
+  roles:
+    - shell_aliases
+    - common_files
+
+- name: Setup Linux hosts
+  hosts: linux
+  vars_files:
+    - vars.yaml
+  roles:
+    - linux
+
+- name: Setup AWS jumphost - public IP
+  hosts: aws_jh_pub
+  tags:
+    - aws_jh_pub
+  vars_files:
+    - vars.yaml
+  roles:
+    - aws-jumphost
+
+- name: Setup Azure jumphost
+  hosts: azure_jh
+  roles: 
+    - azure-jumphost
+  
+- name: Setup PCE
+  hosts: pce
+  tags:
+    - never
+    - pce
+  vars_files:
+    - vars.yaml
+  roles:
+    - pce
+  become: true

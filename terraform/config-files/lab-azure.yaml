@@ -1,0 +1,13 @@
+---
+######### This section should be updated for each deployment #########
+location: East US
+
+######### This section should only be customized if you want to change network or instance configurations #########
+vnets: {}
+vnetPairings: {}
+vpnConnections: {}
+networkSecurityGroups: {}
+windowsVMs: {}
+linuxVMs: {}
+managedDBs: {}
+aksClusters: {}

@@ -1,0 +1,48 @@
+---
+- name: find all server rpms in local directory
+  find:
+    paths: "{{ role_path }}/files/"
+    patterns: "illumio-pce-2*.rpm"
+  register: rpm_files
+  delegate_to: localhost
+  become: false
+
+- name: copy server rpm to the pce
+  copy:
+    src: "{{ item.path }}"
+    dest: /tmp/
+  with_items: "{{ rpm_files.files }}"
+
+- name: install the server rpm
+  yum:
+    name: 
+      - "/tmp/{{ item.path | basename }}"
+    state: present
+    disable_gpg_check: yes
+
+  with_items: "{{ rpm_files.files }}"
+
+- name: find ui rpm in local directory
+  find:
+    paths: "{{ role_path }}/files/"
+    patterns: "illumio-pce-ui*.rpm"
+  register: ui_rpm_files
+  delegate_to: localhost
+  become: false
+
+- name: copy ui rpm to the pce
+  copy:
+    src: "{{ item.path }}"
+    dest: /tmp/
+  with_items: "{{ ui_rpm_files.files }}"
+
+- name: install the ui rpm
+  yum:
+    name: 
+      - "/tmp/{{ item.path | basename }}"
+    state: present
+    disable_gpg_check: yes
+  with_items: "{{ ui_rpm_files.files }}"
+
+
+

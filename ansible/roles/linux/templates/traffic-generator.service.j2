@@ -1,0 +1,11 @@
+[Unit]
+Description=Listening server
+After=network.target
+
+[Service]
+ExecStart=/opt/traffic-generator open {{ hostvars[inventory_hostname]['port'] }}
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
