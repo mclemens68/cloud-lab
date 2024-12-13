@@ -53,10 +53,6 @@ vpcs:
         public: false
     dbGroup: false
 amis:
-  centos7:
-    ami: CentOS Linux 7 x86_64 - 2211
-    owner: '125523088429'
-    user: centos
   alma9:
     ami: AlmaLinux OS 9.4.20240509 x86_64
     owner: '764336703387'

@@ -76,4 +76,4 @@
   shell: |
     /usr/bin/ansible-playbook /home/ubuntu/ansible/main.yaml -i /home/ubuntu/ansible/aws.hosts --limit '!aws_jh_pub'
     scp -r /home/ubuntu/terraform/ jumphost02{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/
-    scp -r /home/ubuntu/ansible/ jumphost0{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/
+    scp -r /home/ubuntu/ansible/ jumphost02{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/
