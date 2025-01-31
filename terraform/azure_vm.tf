@@ -64,7 +64,8 @@ resource "azurerm_network_interface" "vminterfaces" {
     content {
       name                          = each.key
       subnet_id                     = azurerm_subnet.subnets["${each.value["vnet"]}.${each.value["subnet"]}"].id
-      private_ip_address_allocation = "Dynamic"
+      private_ip_address_allocation = lookup(each.value, "staticIP", "") != "" ? "Static" : "Dynamic"
+      private_ip_address            = lookup(each.value, "staticIP", null)
       public_ip_address_id          = azurerm_public_ip.public_ip[each.key].id
     }
   }
@@ -74,12 +75,13 @@ resource "azurerm_network_interface" "vminterfaces" {
     content {
       name                          = each.key
       subnet_id                     = azurerm_subnet.subnets["${each.value["vnet"]}.${each.value["subnet"]}"].id
-      private_ip_address_allocation = "Dynamic"
+      private_ip_address_allocation = lookup(each.value, "staticIP", "") != "" ? "Static" : "Dynamic"
+      private_ip_address            = lookup(each.value, "staticIP", null)
     }
   }
 
- // Dummy ip_configuration block to ensure at least one block is present - needed if no Azure VM's are included
-    dynamic "ip_configuration" {
+  // Dummy ip_configuration block to ensure at least one block is present - needed if no Azure VM's are included
+  dynamic "ip_configuration" {
     for_each = length(local.azure_config.linuxVMs) + length(local.azure_config.windowsVMs) > 0 ? {} : { "dummy" = {} }
     content {
       name                          = "dummy"

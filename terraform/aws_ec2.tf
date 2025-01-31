@@ -20,6 +20,7 @@ resource "aws_instance" "ec2s" {
   vpc_security_group_ids      = [aws_security_group.base[each.value["vpc"]].id]
   associate_public_ip_address = each.value["publicIP"]
   key_name                    = each.value["vpc"]
+  private_ip                  = contains(keys(each.value), "staticIP") ? each.value["staticIP"] : null
   root_block_device {
     delete_on_termination = true
     volume_size           = each.value["volSizeGb"]
