@@ -2,6 +2,11 @@
 ######### This section should be updated for each deployment #########
 location: East US
 
+# If this is set, use the central storage for flow logs, otherwise create a storage blob
+centralLogging: true
+blobFlowLogName: se32globalflowlogs
+blobFlowLogRG: se32-flow-logs
+
 ######### This section should only be customized if you want to change network or instance configurations #########
 vnets:
   vnet-1:
@@ -47,14 +52,14 @@ networkSecurityGroups:
   #       sourceAddressPrefixes: ["*"]
   #       priority: 1000
   db-sec:
-    logFlows: true
+    logFlows: false
     rules:
       baseline-allow:
         destinationPortRange: "*"
         sourceAddressPrefixes: ["10.0.0.0/8", "192.168.0.0/16"]
         priority: 1000
   baseline:
-    logFlows: true
+    logFlows: false
     rules:
       baseline-allow:
         destinationPortRange: "*"
@@ -67,6 +72,11 @@ networkSecurityGroups:
         destinationPortRange: "*"
         sourceAddressPrefixes: ["10.0.0.0/8", "192.168.0.0/16"]
         priority: 1000
+vnetFlowLogs:
+  vnet-1:
+    logFlows: true
+  vnet-2:
+    logFlows: true
 windowsVMs: {}
 linuxVMs:
   jumphost02:
@@ -75,107 +85,131 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.1.4
     tags:
       type: jump
+      env: prod
   hrm-prd-web01:
     vnet: vnet-1
     subnet: subnet-1
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.1.5
     tags:
       type: web
       app: hrm
+      env: prod
   hrm-prd-web02:
     vnet: vnet-1
     subnet: subnet-1
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.1.6
     tags:
       type: web
       app: hrm
+      env: prod
   hrm-prd-web03:
     vnet: vnet-1
     subnet: subnet-1
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.1.7
     tags:
       type: web
       app: hrm
+      env: prod
   hrm-prd-app01:
     vnet: vnet-1
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.2.4
     tags:
       type: app
       app: hrm
+      env: prod
   hrm-prd-app02:
     vnet: vnet-1
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.2.5
     tags:
       type: app
       app: hrm
+      env: prod
   hrm-prd-app03:
     vnet: vnet-1
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.2.6
     tags:
       type: app
       app: hrm
+      env: prod
   hrm-prd-db01:
     vnet: vnet-1
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.2.7
     tags:
       type: db
       app: hrm
+      env: prod
   hrm-prd-db02:
     vnet: vnet-1
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.1.2.8
     tags:
       type: db
       app: hrm
+      env: prod
   hrm-dev-web01:
     vnet: vnet-2
     subnet: subnet-1
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.2.1.4
     tags:
       type: web
       app: hrm
+      env: dev
   hrm-dev-app01:
     vnet: vnet-2
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.2.2.4
     tags:
       type: app
       app: hrm
+      env: dev
   hrm-dev-db01:
     vnet: vnet-2
     subnet: subnet-2
     nsg: baseline
     size: Standard_B1s
     publicIP: false
+    staticIP: 10.2.2.5
     tags:
       type: db
       app: hrm
+      env: dev
 managedDBs: {}
 #   sql01:
 #     vnet: vnet-1

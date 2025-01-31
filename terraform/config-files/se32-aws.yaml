@@ -82,6 +82,7 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: true
+    staticIP: 192.168.1.4
     tags:
       type: jump
   fin-prd-web01:
@@ -91,9 +92,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.4
     tags:
       type: web
       app: finance
+      env: prod
   fin-prd-web02:
     vpc: vpc-1
     subnet: vpc-1.subnet-1
@@ -101,9 +104,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.5
     tags:
       type: web
       app: finance
+      env: prod
   fin-prd-web03:
     vpc: vpc-1
     subnet: vpc-1.subnet-1
@@ -111,9 +116,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.6
     tags:
       type: web
       app: finance
+      env: prod
   fin-prd-app01:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
@@ -121,9 +128,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.68
     tags:
       type: app
       app: finance
+      env: prod
   fin-prd-app02:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
@@ -131,9 +140,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.69
     tags:
       type: app
       app: finance
+      env: prod
   fin-prd-app03:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
@@ -141,9 +152,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.70
     tags:
       type: app
       app: finance
+      env: prod
   fin-prd-db01:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
@@ -151,9 +164,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.71
     tags:
       type: db
       app: finance
+      env: prod
   fin-prd-db02:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
@@ -161,9 +176,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.2.72
     tags:
       type: db
       app: finance
+      env: prod
   fin-dev-web01:
     vpc: vpc-2
     subnet: vpc-2.subnet-1
@@ -171,9 +188,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.3.4
     tags:
       type: web
       app: finance
+      env: dev
   fin-dev-app01:
     vpc: vpc-2
     subnet: vpc-2.subnet-2
@@ -181,9 +200,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.3.68
     tags:
       type: app
       app: finance
+      env: dev
   fin-dev-db01:
     vpc: vpc-2
     subnet: vpc-2.subnet-2
@@ -191,9 +212,11 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
+    staticIP: 192.168.3.69
     tags:
       type: db
       app: finance
+      env: dev
 eksClusters:
   v1eks:
     vpc: vpc-1
