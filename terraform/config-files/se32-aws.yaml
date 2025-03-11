@@ -18,6 +18,8 @@ vpcs:
         az: a 
         public: true
     dbGroup: false
+    reservedIPs:
+      - 192.168.1.7 # If additional static IPs are used in this vpc, also reserve them here
   vpc-1:
     logFlows: true
     cidrBlock: 192.168.2.0/24
@@ -35,6 +37,15 @@ vpcs:
         az: c
         public: false
     dbGroup: true
+    reservedIPs: # If additional static IPs are used in this vpc, also reserve them here
+      - 192.168.2.8
+      - 192.168.2.9
+      - 192.168.2.10
+      - 192.168.2.68
+      - 192.168.2.69
+      - 192.168.2.70
+      - 192.168.2.71
+      - 192.168.2.72
   vpc-2:
     logFlows: true
     cidrBlock: 192.168.3.0/24
@@ -52,6 +63,10 @@ vpcs:
         az: c
         public: false
     dbGroup: false
+    reservedIPs: # If additional static IPs are used in this vpc, also reserve them here
+      - 192.168.3.8
+      - 192.168.3.68
+      - 192.168.3.69
 amis:
   alma9:
     ami: AlmaLinux OS 9.4.20240509 x86_64
@@ -82,7 +97,7 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: true
-    staticIP: 192.168.1.4
+    staticIP: 192.168.1.7
     tags:
       type: jump
   fin-prd-web01:
@@ -92,7 +107,7 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
-    staticIP: 192.168.2.4
+    staticIP: 192.168.2.8
     tags:
       type: web
       app: finance
@@ -104,7 +119,7 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
-    staticIP: 192.168.2.5
+    staticIP: 192.168.2.9
     tags:
       type: web
       app: finance
@@ -116,7 +131,7 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
-    staticIP: 192.168.2.6
+    staticIP: 192.168.2.10
     tags:
       type: web
       app: finance
@@ -188,7 +203,7 @@ ec2Instances:
     type: t3.micro
     volSizeGb: 8
     publicIP: false
-    staticIP: 192.168.3.4
+    staticIP: 192.168.3.8
     tags:
       type: web
       app: finance
