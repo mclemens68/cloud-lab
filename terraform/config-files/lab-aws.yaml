@@ -130,14 +130,30 @@ rdsInstances: {}
 lambdaFunctions: {}
 allowedPorts:
   private:
-  - 22
-  - 3306
-  - 443
-  - 8080
-  - 8000
-  - 5140
-  - 3389
+    - from: 22
+      to: 22
+      protocol: "tcp"
+    - from: 3306
+      to: 3306
+      protocol: "tcp"
+    - from: 443
+      to: 443
+      protocol: "tcp"
+    - from: 8080
+      to: 8080
+      protocol: "tcp"
+    - from: 8000
+      to: 8000
+      protocol: "tcp"
+    - from: 5140
+      to: 5140
+      protocol: "tcp"
+    - from: 3389
+      to: 3389
+      protocol: "tcp"
   public:
   - 8443
   - 8444
+  - 9443
+  - 443
   - 80

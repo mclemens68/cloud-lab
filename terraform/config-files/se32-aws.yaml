@@ -253,9 +253,17 @@ lambdaFunctions:
     subnet: vpc-1.subnet-1
 allowedPorts:
   private:
-  - 22
-  - 3306
-  - 443
-  - 8080
+    - from: 22
+      to: 22
+      protocol: "tcp"
+    - from: 3306
+      to: 3306
+      protocol: "tcp"
+    - from: 443
+      to: 443
+      protocol: "tcp"
+    - from: 8080
+      to: 8080
+      protocol: "tcp"
   public:
   - 8443

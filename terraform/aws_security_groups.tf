@@ -37,9 +37,9 @@ resource "aws_security_group" "base" {
   dynamic "ingress" {
     for_each = local.aws_config.allowedPorts.private
     content {
-      from_port       = ingress.value
-      to_port         = ingress.value
-      protocol        = "tcp"
+      from_port       = ingress.value.from
+      to_port         = ingress.value.to
+      protocol        = ingress.value.protocol
       prefix_list_ids = [aws_ec2_managed_prefix_list.rfc1918.id, aws_ec2_managed_prefix_list.admin.id]
     }
   }
