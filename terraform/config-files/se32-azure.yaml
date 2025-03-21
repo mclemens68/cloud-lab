@@ -85,7 +85,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.1.4
+    staticIP: 10.1.1.7
     tags:
       type: jump
       env: prod
@@ -95,7 +95,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.1.5
+    staticIP: 10.1.1.8
     tags:
       type: web
       app: hrm
@@ -106,7 +106,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.1.6
+    staticIP: 10.1.1.9
     tags:
       type: web
       app: hrm
@@ -117,7 +117,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.1.7
+    staticIP: 10.1.1.10
     tags:
       type: web
       app: hrm
@@ -128,7 +128,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.2.4
+    staticIP: 10.1.2.68
     tags:
       type: app
       app: hrm
@@ -139,7 +139,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.2.5
+    staticIP: 10.1.2.69
     tags:
       type: app
       app: hrm
@@ -150,7 +150,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.2.6
+    staticIP: 10.1.2.70
     tags:
       type: app
       app: hrm
@@ -161,7 +161,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.2.7
+    staticIP: 10.1.2.71
     tags:
       type: db
       app: hrm
@@ -172,7 +172,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.1.2.8
+    staticIP: 10.1.2.72
     tags:
       type: db
       app: hrm
@@ -183,7 +183,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.2.1.4
+    staticIP: 10.2.1.8
     tags:
       type: web
       app: hrm
@@ -194,7 +194,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.2.2.4
+    staticIP: 10.2.2.68
     tags:
       type: app
       app: hrm
@@ -205,7 +205,7 @@ linuxVMs:
     nsg: baseline
     size: Standard_B1s
     publicIP: false
-    staticIP: 10.2.2.5
+    staticIP: 10.2.2.69
     tags:
       type: db
       app: hrm
