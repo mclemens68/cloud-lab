@@ -1,0 +1,18 @@
+[dc]
+ww01.lot48labs.com
+
+[member]
+ww02.lot48labs.com
+ww03.lot48labs.com
+
+[windows:children]
+dc
+member
+
+[windows:vars]
+ansible_user=Administrator
+# put in the ansible_password parameter here
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_port=5985
+ansible_winrm_transport=ntlm

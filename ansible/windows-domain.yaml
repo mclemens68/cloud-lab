@@ -1,0 +1,14 @@
+
+- name: Setup Domain Controller
+  hosts: dc
+  tags:
+    - dc
+  roles:
+    - domain_controller
+
+- name: Join domain
+  hosts: member
+  tags:
+    - member
+  roles:
+    - domain_member
