@@ -5,7 +5,7 @@ location: East US
 # If this is set, use the central storage for flow logs, otherwise create a storage blob
 centralLogging: true
 blobFlowLogName: se32globalflowlogs
-blobFlowLogRG: se32-flow-logs
+blobFlowLogRG: se32globalflowlogs
 
 ######### This section should only be customized if you want to change network or instance configurations #########
 vnets:
