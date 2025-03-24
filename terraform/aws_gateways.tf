@@ -32,6 +32,7 @@ resource "aws_nat_gateway" "ngws" {
 
 // Create 1 transit gateways to connect all the VPCs
 resource "aws_ec2_transit_gateway" "tgw" {
+  count = local.aws_config.transitGateway ? 1 : 0
   description                    = "transit gateway to connect vpcs"
   dns_support                    = "enable"
   vpn_ecmp_support               = "enable"
@@ -43,8 +44,8 @@ resource "aws_ec2_transit_gateway" "tgw" {
 
 // Attach the transit gateway to all subnets in the VPC
 resource "aws_ec2_transit_gateway_vpc_attachment" "tgw-attachment" {
-  for_each           = local.aws_config.vpcs
-  transit_gateway_id = aws_ec2_transit_gateway.tgw.id
+  for_each           = local.aws_config.transitGateway ? local.aws_config.vpcs : {}
+  transit_gateway_id = aws_ec2_transit_gateway.tgw[0].id
   vpc_id             = aws_vpc.vpcs[each.key].id
   subnet_ids         = [for subnetName, v in local.aws_config.vpcs[each.key].subnets : aws_subnet.subnets["${each.key}.${subnetName}"].id]
 }

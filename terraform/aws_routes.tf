@@ -7,9 +7,12 @@ resource "aws_route_table" "private" {
     nat_gateway_id = aws_nat_gateway.ngws[each.key].id
   }
 
-  route {
-    cidr_block         = "192.168.0.0/16"
-    transit_gateway_id = aws_ec2_transit_gateway.tgw.id
+  dynamic route {
+    for_each = local.aws_config.transitGateway ? [1] : []
+    content {
+      cidr_block         = local.aws_config.transitGateawyRoute
+      transit_gateway_id = aws_ec2_transit_gateway.tgw[0].id
+    }
   }
   
   tags = {
@@ -40,10 +43,10 @@ resource "aws_route" "igw" {
 }
 
 resource "aws_route" "tgw" {
-  for_each = local.aws_config.vpcs
+  for_each           = local.aws_config.transitGateway ? local.aws_config.vpcs : {}
   route_table_id            = aws_route_table.public[each.key].id
-  destination_cidr_block    = "192.168.0.0/16"
-  transit_gateway_id = aws_ec2_transit_gateway.tgw.id
+  destination_cidr_block    = local.aws_config.transitGateawyRoute
+  transit_gateway_id = aws_ec2_transit_gateway.tgw[0].id
   depends_on = [aws_ec2_transit_gateway.tgw, aws_ec2_transit_gateway_vpc_attachment.tgw-attachment]
 }
 

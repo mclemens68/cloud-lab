@@ -67,6 +67,8 @@ vpcs:
       - 192.168.3.8
       - 192.168.3.68
       - 192.168.3.69
+transitGateway: true
+transitGateawyRoute: 192.168.0.0/16
 amis:
   alma9:
     ami: AlmaLinux OS 9.4.20240509 x86_64

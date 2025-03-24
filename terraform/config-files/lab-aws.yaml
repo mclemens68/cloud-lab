@@ -9,7 +9,7 @@ route53AWSProfile: "personal" # The AWS profile to be used in your AWS configura
 
 ######### This section should only be customized if you want to change network or instance configurations #########
 vpcs:
-  pce-vpc:
+  lab-pce-vpc:
     logFlows: false
     dbGroup : false
     cidrBlock: 192.168.30.0/24
@@ -22,11 +22,9 @@ vpcs:
         cidrBlock: 192.168.30.64/26
         az: b
         public: false
+transitGateway: false
+transitGateawyRoute: 192.168.0.0/16
 amis:
-  centos7:
-    ami: CentOS Linux 7 x86_64 - 2211
-    owner: '125523088429'
-    user: centos
   alma9:
     ami: AlmaLinux OS 9.4.20240509 x86_64
     owner: '764336703387'
@@ -40,7 +38,7 @@ amis:
     owner: '099720109477'
     user: ubuntu
   windows2019:
-    ami: Windows_Server-2016-English-Full-Base-2024.10.09
+    ami: Windows_Server-2016-English-Full-Base-*
     owner: '801119661308'
     user: Administrator
   f5:
@@ -49,8 +47,8 @@ amis:
     user: root
 ec2Instances:
   pce:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
+    vpc: lab-pce-vpc
+    subnet: lab-pce-vpc.subnet-1
     ami: alma9
     type: m5.2xlarge
     volSizeGb: 60
@@ -58,8 +56,8 @@ ec2Instances:
     tags:
       type: pce
   lw01:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
+    vpc: lab-pce-vpc
+    subnet: lab-pce-vpc.subnet-1
     ami: alma9
     type: t3.micro
     volSizeGb: 8
@@ -68,8 +66,8 @@ ec2Instances:
       type: linuxWkld
     }
   lw02:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
+    vpc: lab-pce-vpc
+    subnet: lab-pce-vpc.subnet-1
     ami: alma9
     type: t3.micro
     volSizeGb: 8
@@ -78,8 +76,8 @@ ec2Instances:
       type: linuxWkld
     }
   lw03:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
+    vpc: lab-pce-vpc
+    subnet: lab-pce-vpc.subnet-2
     ami: alma9
     type: t3.micro
     volSizeGb: 8
@@ -88,8 +86,8 @@ ec2Instances:
       type: linuxWkld
     }
   lw04:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
+    vpc: lab-pce-vpc
+    subnet: lab-pce-vpc.subnet-2
     ami: alma9
     type: t3.micro
     volSizeGb: 8
@@ -97,34 +95,25 @@ ec2Instances:
     tags: {
       type: linuxWkld
     }
-  ww001:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
-    ami: windows2019
-    type: m5.2xlarge
-    volSizeGb: 50
-    publicIP: true
-    tags: {
-      type: windowsWkld
-    }
-  # splunk:
-  #   vpc: pce-vpc
-  #   subnet: pce-vpc.subnet-1
+  # ww001:
+  #   vpc: lab-pce-vpc
+  #   subnet: lab-pce-vpc.subnet-1
+  #   ami: windows2019
+  #   type: m5.2xlarge
+  #   volSizeGb: 50
+  #   publicIP: true
+  #   tags: {
+  #     type: windowsWkld
+  #   }
+  # nenflowlink:
+  #   vpc: lab-pce-vpc
+  #   subnet: lab-pce-vpc.subnet-1
   #   ami: alma9
   #   type: m5.2xlarge
   #   volSizeGb: 60
   #   publicIP: true
   #   tags:
-  #     type: splunk
-  nenflowlink:
-    vpc: pce-vpc
-    subnet: pce-vpc.subnet-1
-    ami: alma9
-    type: m5.2xlarge
-    volSizeGb: 60
-    publicIP: true
-    tags:
-      type: nenflowlink
+  #     type: nenflowlink
 eksClusters: {}
 rdsInstances: {}
 lambdaFunctions: {}

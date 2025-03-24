@@ -104,8 +104,10 @@ resource "azurerm_storage_account" "vnet_storage" {
   account_replication_type  = "LRS"
 }
 
-data "azurerm_storage_account" "central_vnet_storage" {
-  name                = local.azure_config.blobFlowLogName
+module "storage_account" {
+  source              = "./modules/storage_lookup"
+  count = local.azure_config.centralLogging ? 1 : 0
+  name = local.azure_config.blobFlowLogName
   resource_group_name = local.azure_config.blobFlowLogRG
 }
 
@@ -116,7 +118,7 @@ resource "azurerm_network_watcher_flow_log" "vnet_flow_log" {
   name                 = each.key
 
   target_resource_id   = azurerm_virtual_network.vnets[each.key].id
-  storage_account_id   = local.azure_config.centralLogging ? data.azurerm_storage_account.central_vnet_storage.id : azurerm_storage_account.vnet_storage[each.key].id
+  storage_account_id   = local.azure_config.centralLogging ? module.storage_account[0].id : azurerm_storage_account.vnet_storage[each.key].id
   enabled              = true
   version              = 2
 

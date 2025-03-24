@@ -2,8 +2,14 @@
 ######### This section should be updated for each deployment #########
 location: East US
 
+# If this is set, use the central storage for flow logs, otherwise create a storage blob
+centralLogging: false
+blobFlowLogName: ""
+blobFlowLogRG: ""
+
 ######### This section should only be customized if you want to change network or instance configurations #########
 vnets: {}
+vnetFlowLogs: {}
 vnetPairings: {}
 vpnConnections: {}
 networkSecurityGroups: {}
