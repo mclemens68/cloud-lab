@@ -1,10 +1,6 @@
 # Point to the right terraform config yaml files.
-# aws_config_file: ../terraform/config-files/se32-aws.yaml
-# azure_config_file: ../terraform/config-files/se32-azure.yaml
-aws_config_file: ../terraform/config-files/project-blue-aws.yaml
-azure_config_file: ../terraform/config-files/project-blue-azure.yaml
-# aws_config_file: ../terraform/config-files/lab-aws.yaml
-# azure_config_file: ../terraform/config-files/lab-azure.yaml
+aws_config_file: ../terraform/config-files/uc-demo-aws.yaml
+azure_config_file: ../terraform/config-files/uc-demo-azure.yaml
 
 # PCE variables
 pce_hostname: "pce"

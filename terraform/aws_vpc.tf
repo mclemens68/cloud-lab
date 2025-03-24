@@ -31,12 +31,6 @@ resource "aws_key_pair" "auth" {
   public_key = file("${local.aws_config.sshKey}.pub")
 }
 
-# // Create 1 s3 bucket for VPC flow logs
-# resource "aws_s3_bucket" "flow_logs" {
-#   bucket        = "terraformvpcflowlogs"
-#   force_destroy = true
-# }
-
 // Enable VPC flow logging for all VPCs
 resource "aws_flow_log" "vpc_flow_log" {
   for_each = { for k, v in local.aws_config.vpcs : k => v if v.logFlows }
