@@ -114,9 +114,9 @@ ec2Instances:
   #   publicIP: true
   #   tags:
   #     type: nenflowlink
-eksClusters: {}
 rdsInstances: {}
 lambdaFunctions: {}
+eksClusters: {}
 allowedPorts:
   private:
     - from: 22
@@ -128,11 +128,8 @@ allowedPorts:
     - from: 443
       to: 443
       protocol: "tcp"
-    - from: 8080
-      to: 8080
-      protocol: "tcp"
     - from: 8000
-      to: 8000
+      to: 9000
       protocol: "tcp"
     - from: 5140
       to: 5140
