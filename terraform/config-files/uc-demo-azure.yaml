@@ -87,7 +87,8 @@ linuxVMs:
     publicIP: false
     staticIP: 10.1.1.7
     tags:
-      type: jump
+      type: jumpbox
+      app: jump-infra
       env: prod
   hrm-prd-web01:
     vnet: vnet-1

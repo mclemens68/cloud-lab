@@ -101,7 +101,9 @@ ec2Instances:
     publicIP: true
     staticIP: 192.168.1.7
     tags:
-      type: jump
+      type: jumpbox
+      app: jump-infra
+      env: prod
   fin-prd-web01:
     vpc: vpc-1
     subnet: vpc-1.subnet-1
