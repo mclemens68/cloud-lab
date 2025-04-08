@@ -9,6 +9,16 @@
     file: "{{ vars.azure_config_file }}"
     name: azure_data
 
+- name: Generate demo-jumpbox.hosts from template
+  template:
+    src: demo-jumpbox.hosts.j2
+    dest: demo-jumpbox.hosts
+  vars:
+    ec2Instances: "{{ aws_data.ec2Instances }}"
+    ssh_key: "{{ aws_data.sshKey }}"
+    domain: "{{ aws_data.dnsZone }}"
+    dnsSuffix: "{{ aws_data.dnsSuffix }}"
+
 - name: Generate aws.hosts from template
   template:
     src: aws.hosts.j2

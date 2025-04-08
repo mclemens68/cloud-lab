@@ -34,6 +34,7 @@ resource "aws_security_group" "base" {
   description = "default rules for lab workloads"
   vpc_id      = aws_vpc.vpcs[each.key].id
 
+  // Private ingress rules
   dynamic "ingress" {
     for_each = local.aws_config.allowedPorts.private
     content {
@@ -44,12 +45,13 @@ resource "aws_security_group" "base" {
     }
   }
 
+  // Public ingress rules (only created if public ports are defined)
   dynamic "ingress" {
-    for_each = local.aws_config.allowedPorts.public
+    for_each = length(local.aws_config.allowedPorts.public) > 0 ? local.aws_config.allowedPorts.public : []
     content {
-      from_port   = ingress.value
-      to_port     = ingress.value
-      protocol    = "tcp"
+      from_port   = ingress.value.from
+      to_port     = ingress.value.to
+      protocol    = ingress.value.protocol
       cidr_blocks = ["0.0.0.0/0"]
     }
   }

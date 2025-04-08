@@ -1,0 +1,56 @@
+- name: Load AWS YAML file
+  include_vars:
+    file: "{{ vars.aws_config_file }}"
+    name: aws_data
+    
+- name: change hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+  become: true
+
+- name: Generate a new SSH keypair
+  ansible.builtin.openssh_keypair:
+    path: /home/{{ ansible_user }}/.ssh/id_rsa
+    type: rsa
+    size: 4096
+    force: true
+  become_user: "{{ ansible_user }}"
+
+- name: Clone the cloud-lab repository
+  ansible.builtin.git:
+    repo: https://github.com/brian1917/cloud-lab
+    dest: /home/{{ ansible_user }}/cloud-lab
+    version: HEAD
+    force: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Install Terraform dependencies
+  ansible.builtin.package:
+    name: unzip
+    state: present
+  become: true
+
+- name: Download Terraform binary
+  ansible.builtin.get_url:
+    url: https://releases.hashicorp.com/terraform/1.5.6/terraform_1.5.6_linux_amd64.zip
+    dest: /tmp/terraform.zip
+  become: true
+
+- name: Extract Terraform binary
+  ansible.builtin.unarchive:
+    src: /tmp/terraform.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+  become: true
+
+- name: Ensure Terraform is executable
+  ansible.builtin.file:
+    path: /usr/local/bin/terraform
+    mode: '0755'
+  become: true
+
+- name: Install Ansible
+  ansible.builtin.package:
+    name: ansible
+    state: present
+  become: true

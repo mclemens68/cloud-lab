@@ -50,7 +50,7 @@ ec2Instances:
     vpc: lab-pce-vpc
     subnet: lab-pce-vpc.subnet-1
     ami: alma9
-    type: m5.2xlarge
+    type: m6a.2xlarge
     volSizeGb: 60
     publicIP: true
     tags:
@@ -59,7 +59,7 @@ ec2Instances:
     vpc: lab-pce-vpc
     subnet: lab-pce-vpc.subnet-1
     ami: alma9
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: true
     tags: {
@@ -69,7 +69,7 @@ ec2Instances:
     vpc: lab-pce-vpc
     subnet: lab-pce-vpc.subnet-1
     ami: alma9
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: true
     tags: {
@@ -79,7 +79,7 @@ ec2Instances:
     vpc: lab-pce-vpc
     subnet: lab-pce-vpc.subnet-2
     ami: alma9
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: true
     tags: {
@@ -89,7 +89,7 @@ ec2Instances:
     vpc: lab-pce-vpc
     subnet: lab-pce-vpc.subnet-2
     ami: alma9
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: true
     tags: {
@@ -114,6 +114,15 @@ ec2Instances:
   #   publicIP: true
   #   tags:
   #     type: nenflowlink
+  # splunk:
+  #   vpc: pce-vpc
+  #   subnet: pce-vpc.subnet-1
+  #   ami: alma9
+  #   type: m6a.2xlarge
+  #   volSizeGb: 60
+  #   publicIP: true
+  #   tags:
+  #    type: splunk
 eksClusters: {}
 rdsInstances: {}
 lambdaFunctions: {}
@@ -141,8 +150,21 @@ allowedPorts:
       to: 3389
       protocol: "tcp"
   public:
-  - 8443
-  - 8444
-  - 9443
-  - 443
-  - 80
+    - from: 8443
+      to: 8443
+      protocol: "tcp"
+    - from: 8444
+      to: 8444
+      protocol: "tcp"
+    - from: 9443
+      to: 9443
+      protocol: "tcp"
+    - from: 443
+      to: 443
+      protocol: "tcp"
+    - from: 80
+      to: 80
+      protocol: "tcp"
+    - from: 8000
+      to: 8000
+      protocol: "tcp"

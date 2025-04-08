@@ -14,6 +14,7 @@ workloader.log
 ansible/pce.hosts
 ansible/aws.hosts
 ansible/azure.hosts
+ansible/demo-jumpbox.hosts
 k8s/*
 terraform/config-files/*
 !terraform/config-files/uc-demo-aws.yaml
@@ -21,6 +22,8 @@ terraform/config-files/*
 !terraform/config-files/lab-aws.yaml
 !terraform/config-files/lab-azure.yaml
 !terraform/config-files/confidential-example.yaml
+!terraform/config-files/demo-jumpbox-aws.yaml
+!terraform/config-files/demo-jumpbox-azure.yaml
 *.zip
 *confidential.yaml
 scripts/*.log

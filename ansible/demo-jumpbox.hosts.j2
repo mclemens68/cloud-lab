@@ -1,0 +1,8 @@
+[demo-jumpbox]
+{% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'demo-jumpbox' %}
+{{ instance_name }}{{ dnsSuffix }}.{{domain}}
+{% endfor %}
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
