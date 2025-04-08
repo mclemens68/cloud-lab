@@ -54,3 +54,52 @@
     name: ansible
     state: present
   become: true
+
+- name: Download AWS CLI installer
+  ansible.builtin.get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+  become: true
+
+- name: Unzip AWS CLI installer
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp/
+    remote_src: yes
+  become: true
+
+- name: Install AWS CLI
+  ansible.builtin.command:
+    cmd: /tmp/aws/install --update
+  become: true
+
+- name: Add Microsoft repository key (Debian-based systems)
+  ansible.builtin.apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Add Microsoft repository for Azure CLI (Debian-based systems)
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_facts['lsb']['codename'] }} main"
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Add Microsoft repository for Azure CLI (Red Hat-based systems)
+  ansible.builtin.yum_repository:
+    name: azure-cli
+    description: Microsoft Azure CLI
+    baseurl: https://packages.microsoft.com/yumrepos/azure-cli
+    gpgcheck: yes
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+    enabled: yes
+  when: ansible_facts['os_family'] == 'RedHat'
+  become: true
+
+- name: Install Azure CLI
+  ansible.builtin.package:
+    name: azure-cli
+    state: present
+  become: true
