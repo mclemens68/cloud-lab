@@ -1,0 +1,105 @@
+- name: Load AWS YAML file
+  include_vars:
+    file: "{{ vars.aws_config_file }}"
+    name: aws_data
+    
+- name: change hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+  become: true
+
+- name: Generate a new SSH keypair
+  ansible.builtin.openssh_keypair:
+    path: /home/{{ ansible_user }}/.ssh/id_rsa
+    type: rsa
+    size: 4096
+    force: true
+  become_user: "{{ ansible_user }}"
+
+- name: Clone the cloud-lab repository
+  ansible.builtin.git:
+    repo: https://github.com/brian1917/cloud-lab
+    dest: /home/{{ ansible_user }}/cloud-lab
+    version: HEAD
+    force: yes
+  become_user: "{{ ansible_user }}"
+
+- name: Install Terraform dependencies
+  ansible.builtin.package:
+    name: unzip
+    state: present
+  become: true
+
+- name: Download Terraform binary
+  ansible.builtin.get_url:
+    url: https://releases.hashicorp.com/terraform/1.5.6/terraform_1.5.6_linux_amd64.zip
+    dest: /tmp/terraform.zip
+  become: true
+
+- name: Extract Terraform binary
+  ansible.builtin.unarchive:
+    src: /tmp/terraform.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+  become: true
+
+- name: Ensure Terraform is executable
+  ansible.builtin.file:
+    path: /usr/local/bin/terraform
+    mode: '0755'
+  become: true
+
+- name: Install Ansible
+  ansible.builtin.package:
+    name: ansible
+    state: present
+  become: true
+
+- name: Download AWS CLI installer
+  ansible.builtin.get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+  become: true
+
+- name: Unzip AWS CLI installer
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp/
+    remote_src: yes
+  become: true
+
+- name: Install AWS CLI
+  ansible.builtin.command:
+    cmd: /tmp/aws/install --update
+  become: true
+
+- name: Add Microsoft repository key (Debian-based systems)
+  ansible.builtin.apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Add Microsoft repository for Azure CLI (Debian-based systems)
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_facts['lsb']['codename'] }} main"
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Add Microsoft repository for Azure CLI (Red Hat-based systems)
+  ansible.builtin.yum_repository:
+    name: azure-cli
+    description: Microsoft Azure CLI
+    baseurl: https://packages.microsoft.com/yumrepos/azure-cli
+    gpgcheck: yes
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+    enabled: yes
+  when: ansible_facts['os_family'] == 'RedHat'
+  become: true
+
+- name: Install Azure CLI
+  ansible.builtin.package:
+    name: azure-cli
+    state: present
+  become: true

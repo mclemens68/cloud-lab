@@ -96,7 +96,7 @@ ec2Instances:
     vpc: jump-vpc
     subnet: jump-vpc.subnet-1
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: true
     staticIP: 192.168.1.7
@@ -108,7 +108,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-1
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.8
@@ -120,7 +120,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-1
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.9
@@ -132,7 +132,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-1
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.10
@@ -144,7 +144,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.68
@@ -156,7 +156,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.69
@@ -168,7 +168,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.70
@@ -180,7 +180,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.71
@@ -192,7 +192,7 @@ ec2Instances:
     vpc: vpc-1
     subnet: vpc-1.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.2.72
@@ -204,7 +204,7 @@ ec2Instances:
     vpc: vpc-2
     subnet: vpc-2.subnet-1
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.3.8
@@ -216,7 +216,7 @@ ec2Instances:
     vpc: vpc-2
     subnet: vpc-2.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.3.68
@@ -228,7 +228,7 @@ ec2Instances:
     vpc: vpc-2
     subnet: vpc-2.subnet-2
     ami: ubuntu24
-    type: t3.micro
+    type: t3a.micro
     volSizeGb: 8
     publicIP: false
     staticIP: 192.168.3.69
@@ -270,4 +270,6 @@ allowedPorts:
       to: 8080
       protocol: "tcp"
   public:
-  - 8443
+    - from: 8443
+      to: 8443
+      protocol: "tcp"

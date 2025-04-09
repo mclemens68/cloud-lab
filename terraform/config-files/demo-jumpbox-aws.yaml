@@ -1,0 +1,54 @@
+---
+######### This section should be updated for each deployment #########
+region: us-east-1
+dnsZone: clemenslabs.com
+dnsSuffix: .uscentral # Use if running multiple labs with a single dns zone
+sshKey: ~/.ssh/id_rsa
+s3FlowLogArn: arn:aws:s3:::global-vpc-flow-logs-se15-us-east-2 # No S3 bucket is created so centralized storage can be used. Put the arn of the S3 bucket here.
+route53AWSProfile: "se15" # The AWS profile to be used in your AWS configuration for the route53 DNS
+
+######### This section should only be customized if you want to change network or instance configurations #########
+vpcs:
+  demo-jump-vpc:
+    logFlows: false
+    dbGroup : false
+    cidrBlock: 192.168.1.0/24
+    subnets:
+      subnet-1:
+        cidrBlock: 192.168.1.0/26
+        az: a
+        public: true
+transitGateway: false
+transitGateawyRoute: 192.168.0.0/16
+
+amis:
+  alma9:
+    ami: AlmaLinux OS 9.4.20240509 x86_64
+    owner: '764336703387'
+    user: ec2-user
+  ubuntu24:
+    ami: ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server*
+    owner: '099720109477'
+    user: ubuntu
+ec2Instances:
+  demo-jumpbox:
+    vpc: demo-jump-vpc
+    subnet: demo-jump-vpc.subnet-1
+    ami: ubuntu24
+    type: t3a.micro
+    volSizeGb: 8
+    publicIP: true
+    tags: {
+      type: demo-jumpbox
+    }
+eksClusters: {}
+rdsInstances: {}
+lambdaFunctions: {}
+dynamoDBTables: {}
+vpcEndpoints: {}
+allowedPorts:
+  private:
+    - from: 22
+      to: 22
+      protocol: "tcp"
+  public: []

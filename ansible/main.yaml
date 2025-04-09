@@ -20,6 +20,13 @@
     - shell_aliases
     - common_files
 
+- name: Setup Demo Jumpbox
+  hosts: demo-jumpbox
+  vars_files:
+    - vars.yaml
+  roles:
+    - demo-jumpbox
+
 - name: Setup Linux hosts
   hosts: linux
   vars_files:
