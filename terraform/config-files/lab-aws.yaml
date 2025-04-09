@@ -2,7 +2,7 @@
 ######### This section should be updated for each deployment #########
 region: us-east-1
 dnsZone: lot48labs.com
-dnsSuffix: "" # Use if running multiple labs with a single dns zone
+dnsSubDomain: "" # Requires trailing dot (eg., "subdomain."")
 sshKey: ~/.ssh/id_rsa
 s3FlowLogArn: arn:aws:s3:::global-vpc-flow-logs-se32 # No S3 bucket is created so centralized storage can be used. Put the arn of the S3 bucket here.
 route53AWSProfile: "personal" # The AWS profile to be used in your AWS configuration for the route53 DNS

@@ -14,7 +14,7 @@
     group: "{{ ansible_user }}"
     mode: '0644'
   vars:
-    domain: "{{ aws_data.dnsZone }}"
+    domain: "{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}"
 
 - name: Ensure .bash_aliases is sourced in .bashrc
   lineinfile:

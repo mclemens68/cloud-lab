@@ -49,14 +49,14 @@
     name: move config files to azure jumphost
     minute: "0"
     hour: "*"
-    job: "scp -r /home/ubuntu/terraform/ jumphost02{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/"
+    job: "scp -r /home/ubuntu/terraform/ jumphost02.{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}:/home/ubuntu/"
 
 - name: Add to cron - move files to azure jumphost every hour
   cron:
     name: move ansible files to azure jumphost every hour
     minute: "0"
     hour: "*"
-    job: "scp -r /home/ubuntu/ansible/ jumphost02{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/"
+    job: "scp -r /home/ubuntu/ansible/ jumphost02.{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}:/home/ubuntu/"
 
 - name: Add to cron - update all other aws servers and azure jumphost every day at 6am
   cron:
@@ -75,5 +75,5 @@
 - name: Execute relevant cron jobs now to set up aws servers and move files to azure jumphost
   shell: |
     /usr/bin/ansible-playbook /home/ubuntu/ansible/main.yaml -i /home/ubuntu/ansible/aws.hosts --limit '!aws_jh_pub'
-    scp -r /home/ubuntu/terraform/ jumphost02{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/
-    scp -r /home/ubuntu/ansible/ jumphost02{{ aws_data.dnsSuffix }}.{{ aws_data.dnsZone }}:/home/ubuntu/
+    scp -r /home/ubuntu/terraform/ jumphost02.{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}:/home/ubuntu/
+    scp -r /home/ubuntu/ansible/ jumphost02.{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}:/home/ubuntu/
