@@ -1,6 +1,6 @@
 # Point to the right terraform config yaml files.
-aws_config_file: ../terraform/config-files/uc-demo-aws.yaml
-azure_config_file: ../terraform/config-files/uc-demo-azure.yaml
+aws_config_file: ../config-files/uc-demo-aws.yaml
+azure_config_file: ../config-files/uc-demo-azure.yaml
 
 # PCE variables
 pce_hostname: "pce"

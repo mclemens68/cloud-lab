@@ -1,8 +1,8 @@
 locals {
 
-  aws_config_temp   = yamldecode(file("${path.module}/config-files/${terraform.workspace}-aws.yaml"))
-  azure_config_temp = yamldecode(file("${path.module}/config-files/${terraform.workspace}-azure.yaml"))
-  confidential = yamldecode(file("${path.module}/config-files/confidential.yaml"))
+  aws_config_temp   = yamldecode(file("../config-files/${terraform.workspace}-aws.yaml"))
+  azure_config_temp = yamldecode(file("../config-files/${terraform.workspace}-azure.yaml"))
+  confidential = yamldecode(file("../config-files/confidential.yaml"))
 
 
 # For Azure, set the name of the resource group to correspond to the workspace
@@ -14,7 +14,8 @@ locals {
     local.confidential
   )
 
-  aws_config = merge(local.aws_config_temp, local.confidential)
+  aws_config = merge(local.aws_config_temp, local.confidential, {dnsSubWithPrecedingDot = ".${local.aws_config_temp.dnsSubDomain}" })
+
 
 # Everything below creates a map with the vpc name as the key and the value is the list of subnet IDs.
 # This is used in the transit gateway to attach the subnets

@@ -9,7 +9,7 @@ Each lab should use its own Terraform workspace. See below for useful commands:
 - Create a new Terraform workspace: `terraform workspace new se32`
 - Switch Terraform workspaces: `terraform workspace select se32`
 
-The lab is designed to be governed by two configuration files: 1 for AWS and 1 for Azure. The config files should reside in the `terraform/config-files` directory. The format should be `{terraform-workspace}-{csp}.yaml.` For example, if my Terraform workspace is `se32`, the lab config files should `terraform/config-files/se32-aws.yaml` amd `terraform/config-files/se32-azure.yaml`
+The lab is designed to be governed by two configuration files: 1 for AWS and 1 for Azure. The config files should reside in the `config-files` directory. The format should be `{terraform-workspace}-{csp}.yaml.` For example, if my Terraform workspace is `se32`, the lab config files should `config-files/se32-aws.yaml` amd `config-files/se32-azure.yaml`
 
 The two example config files in this repo have annotated the parameters that need to be configured. The `se32` example has networks and workloads for building a demo for CloudSecure. This Terraform targets AWS and Azure. The `lab` example is simpler with AWS only workloads for a PCE and example workloads. (Note - you still need the Azure config file, but it's mainly empty)
 

@@ -21,12 +21,12 @@
     path: "{{ item }}"
     state: directory
     mode: '0755'  # Adjust permissions as needed
-  with_items: ["terraform", "terraform/config-files" ]
+  with_items: ["terraform", "config-files" ]
    
 - name: Copy terraform configuration files to the jumphost
   copy:
     src: "{{ item }}"
-    dest: "terraform/config-files/{{ item | basename }}"
+    dest: "config-files/{{ item | basename }}"
   with_items: ["{{ vars.azure_config_file }}", "{{ vars.aws_config_file }}" ]
 
 - name: Install ansible on the remote host if not already installed
