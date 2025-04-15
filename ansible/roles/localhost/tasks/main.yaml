@@ -16,7 +16,7 @@
   vars:
     ec2Instances: "{{ aws_data.ec2Instances }}"
     ssh_key: "{{ aws_data.sshKey }}"
-    domain: "{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}"
+    domain: "{{ aws_data.dnsSubDomain }}.{{ aws_data.dnsZone }}"
 
 - name: Generate aws.hosts from template
   template:
@@ -25,7 +25,7 @@
   vars:
     ec2Instances: "{{ aws_data.ec2Instances }}"
     ssh_key: "{{ aws_data.sshKey }}"
-    domain: "{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}"
+    domain: "{{ aws_data.dnsSubDomain }}.{{ aws_data.dnsZone }}"
     linuxVMs: "{{ azure_data.linuxVMs }}"
 
 - name: Generate azure.hosts from template
@@ -35,7 +35,7 @@
   vars:
     linuxVMs: "{{ azure_data.linuxVMs }}"
     ssh_key: "{{ aws_data.sshKey }}"
-    domain: "{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}"
+    domain: "{{ aws_data.dnsSubDomain }}.{{ aws_data.dnsZone }}"
 
 - name: Generate pce.hosts from template
   template:
@@ -44,4 +44,4 @@
   vars:
     ec2Instances: "{{ aws_data.ec2Instances }}"
     ssh_key: "{{ aws_data.sshKey }}"
-    domain: "{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}"
+    domain: "{{ aws_data.dnsSubDomain }}.{{ aws_data.dnsZone }}"

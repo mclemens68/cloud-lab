@@ -1,6 +1,6 @@
 [web]
 {% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'web' %}
-{{ instance_name }}.{{domain}}
+{{ instance_name }}{{domain}}
 {% endfor %}
 
 [web:vars]
@@ -8,7 +8,7 @@ port=443
 
 [app]
 {% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'app' %}
-{{ instance_name }}.{{domain}}
+{{ instance_name }}{{domain}}
 {% endfor %}
 
 [app:vars]
@@ -16,7 +16,7 @@ port=8080
 
 [db]
 {% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'db' %}
-{{ instance_name }}.{{domain}}
+{{ instance_name }}{{domain}}
 {% endfor %}
 
 [db:vars]
@@ -29,17 +29,17 @@ db
 
 [azure_jh]
 {% for instance_name, instance in linuxVMs.items() if instance.tags.type == 'jumpbox' %}
-{{ instance_name }}.{{domain}}
+{{ instance_name }}{{domain}}
 {% endfor %}
 
 [aws_jh_pub]
 {% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'jumpbox' %}
-{{ instance_name }}.{{domain}}
+{{ instance_name }}{{domain}}
 {% endfor %}
 
 [aws_jh_priv]
 {% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'jumpbox' %}
-{{ instance_name }}-priv.{{domain}}
+{{ instance_name }}-priv{{domain}}
 {% endfor %}
 
 [all:vars]
