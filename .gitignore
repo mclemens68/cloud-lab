@@ -16,6 +16,8 @@ ansible/aws.hosts
 ansible/azure.hosts
 ansible/demo-jumpbox.hosts
 k8s/*
+!k8s/yelb*
+!k8s/php-guestbook*
 config-files/*
 !config-files/uc-demo-aws.yaml
 !config-files/uc-demo-azure.yaml
