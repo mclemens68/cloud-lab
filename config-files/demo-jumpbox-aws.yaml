@@ -1,11 +1,11 @@
 ---
 ######### This section should be updated for each deployment #########
 region: us-east-1
-dnsSubDomain: "" # Requires trailing dot (eg., "subdomain."")
-dnsZone: clemenslabs.com
+dnsZone: illumio-demo.com
+dnsSubDomain: "" # No trailing or preceding dots.
 sshKey: ~/.ssh/id_rsa
-s3FlowLogArn: arn:aws:s3:::global-vpc-flow-logs-se15-us-east-2 # No S3 bucket is created so centralized storage can be used. Put the arn of the S3 bucket here.
-route53AWSProfile: "se15" # The AWS profile to be used in your AWS configuration for the route53 DNS
+s3FlowLogArn: arn:aws:s3:::global-vpc-flow-logs-se15-us-east-1 # No S3 bucket is created so centralized storage can be used. Put the arn of the S3 bucket here.
+route53AWSProfile: "demo-dns" # The AWS profile to be used in your AWS configuration for the route53 DNS
 
 ######### This section should only be customized if you want to change network or instance configurations #########
 vpcs:

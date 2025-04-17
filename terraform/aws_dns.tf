@@ -10,7 +10,7 @@ resource "aws_route53_record" "ec2_public_dns" {
   provider = aws.personal
   for_each = { for k, v in local.aws_config.ec2Instances : k => v if v.publicIP }
   zone_id  = data.aws_route53_zone.zone.zone_id
-  name     = "${each.key}${local.aws_config.dnsSubDomain}"
+  name     = "${each.key}${local.aws_config.dnsSubWithPrecedingDot}"
   type     = "A"
   ttl      = "30"
   records  = [aws_instance.ec2s[each.key].public_ip]
