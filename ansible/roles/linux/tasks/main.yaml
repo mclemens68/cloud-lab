@@ -3,11 +3,6 @@
     file: "{{ vars.aws_config_file }}"
     name: aws_data
     
-- name: change hostname
-  ansible.builtin.hostname:
-    name: "{{ inventory_hostname }}"
-  become: true
-
 - name: copy traffic-generator executable
   ansible.builtin.copy:
     src: traffic-generator
@@ -44,7 +39,6 @@
   vars:
     dns: >-
       {{ aws_data.dnsZone if aws_data.dnsSubDomain == '' else aws_data.dnsSubDomain ~ '.' ~ aws_data.dnsZone }}
-
 
 - name: run traffic every 10 minutes
   cron:

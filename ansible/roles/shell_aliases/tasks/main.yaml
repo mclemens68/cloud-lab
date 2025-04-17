@@ -5,6 +5,11 @@
     file: "{{ vars.aws_config_file }}"
     name: aws_data
 
+- name: change hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+  become: true
+
 
 - name: Ensure .bash_aliases file exists with correct content
   template:
@@ -14,7 +19,8 @@
     group: "{{ ansible_user }}"
     mode: '0644'
   vars:
-    domain: "{{ aws_data.dnsSubDomain }}{{ aws_data.dnsZone }}"
+    domain: >-
+      {{ aws_data.dnsZone if aws_data.dnsSubDomain == '' else aws_data.dnsSubDomain ~ '.' ~ aws_data.dnsZone }}
 
 - name: Ensure .bash_aliases is sourced in .bashrc
   lineinfile:

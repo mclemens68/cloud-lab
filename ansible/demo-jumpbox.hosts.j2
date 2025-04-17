@@ -1,6 +1,6 @@
 [demo-jumpbox]
 {% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'demo-jumpbox' %}
-{{ instance_name }}{{domain}}
+{{ instance_name }}.{{domain}}
 {% endfor %}
 
 [all:vars]
