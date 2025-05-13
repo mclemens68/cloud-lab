@@ -5,8 +5,8 @@ set -e
 # and terraform workspace
 # Modify these as necessary
 GITHUB="/opt/github"
-LOG_FILE="$GITHUB/cloud-lab/scripts/setup-cs-demo.log"
-WORKSPACE="se15"
+LOG_FILE="$GITHUB/cloud-lab/scripts/setup-demo-jumpbox.log"
+WORKSPACE="demo-jumpbox"
 
 # Redirect all output (stdout and stderr) to the log file
 exec > >(tee "$LOG_FILE") 2>&1
@@ -39,7 +39,8 @@ fi
 
 # Execute Ansible playbooks
 ./01-setup-hosts.sh
-./02-setup-cs-demo.sh
+./05-update-demo-jumpbox.sh
+./06-setup-demo-jumpbox.sh
 
 echo "Script execution completed successfully at $(date)"
 
