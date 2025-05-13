@@ -17,5 +17,5 @@
 # Modify these as necessary
 SCRIPT_DIR="/opt/github/cloud-lab/scripts"
 
-echo "$SCRIPT_DIR/setup-cs-demo.sh" | at 6:00am
+echo "$SCRIPT_DIR/setup-cs-demo.sh" | at 5:00am
 echo "$SCRIPT_DIR/teardown-cs-demo.sh" | at 5:00pm

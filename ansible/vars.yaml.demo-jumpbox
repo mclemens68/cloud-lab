@@ -1,0 +1,10 @@
+# Point to the right terraform config yaml files.
+aws_config_file: ../config-files/demo-jumpbox-aws.yaml
+azure_config_file: ../config-files/demo-jumpbox-azure.yaml
+
+# PCE variables
+pce_hostname: "pce"
+org: "demo"
+user_full_name: "Brian Pitta"
+user_email: "brian.pitta@illumio.com"
+user_pwd: "Illumio123"
