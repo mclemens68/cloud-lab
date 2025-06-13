@@ -1,0 +1,22 @@
+---
+######### This section should be updated for each deployment #########
+location: eastus
+
+# If this is set, use the central storage for flow logs, otherwise create a storage blob
+centralLogging: true
+blobFlowLogName: se15globalflowlogs
+blobFlowLogRG: se15-flow-logs
+
+vnets: {}
+vnetFlowLogs: {}
+vnetPairings: {}
+vpnConnections: {}
+networkSecurityGroups: {}
+windowsVMs: {}
+linuxVMs: {}
+managedDBs: {}
+aksClusters:
+  aks-cluster-01:
+    nodeCount: 2
+    adminUserName: "k8sadmin"
+    cni: "kubenet"

@@ -1,0 +1,83 @@
+---
+######### This section should be updated for each deployment #########
+region: us-east-1
+dnsZone: clemenslabs.com
+dnsSubDomain: "" # No trailing or preceding dots.
+sshKey: ~/.ssh/id_rsa
+s3FlowLogArn: arn:aws:s3:::global-vpc-flow-logs-se15-us-east-1 # No S3 bucket is created so centralized storage can be used. Put the arn of the S3 bucket here.
+route53AWSProfile: "se15" # The AWS profile to be used in your AWS configuration for the route53 DNS
+
+vpcs: {}
+#  k8s-vpc:
+#    logFlows: true
+#    dbGroup : false
+#    cidrBlock: 192.168.40.0/24
+#    subnets:
+#      subnet-1:
+#        cidrBlock: 192.168.40.0/26
+#        az: a
+#        public: true
+#      subnet-2:
+#        cidrBlock: 192.168.40.64/26
+#        az: b
+#        public: false
+transitGateway: false
+transitGateawyRoute: 192.168.0.0/16
+amis:
+  alma9:
+    ami: AlmaLinux OS 9.4.20240509 x86_64
+    owner: '764336703387'
+    user: ec2-user
+  ubuntu22:
+    ami: ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server*
+    owner: '099720109477'
+    user: ubuntu
+  ubuntu24:
+    ami: ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server*
+    owner: '099720109477'
+    user: ubuntu
+ec2Instances: {}
+  #  k8s-mstr:
+  #    vpc: k8s-vpc
+  #    subnet: k8s-vpc.subnet-1
+  #    ami: ubuntu22
+  #    type: t3a.medium
+  #    volSizeGb: 20
+  #    publicIP: true
+  #    tags: {}
+  #  k8s-wk1:
+  #    vpc: k8s-vpc
+  #    subnet: k8s-vpc.subnet-1
+  #    ami: ubuntu22
+  #    type: t3a.small
+  #    volSizeGb: 12
+  #    publicIP: true
+  #    tags: {}
+  #  k8s-wk2:
+  #    vpc: k8s-vpc
+  #    subnet: k8s-vpc.subnet-1
+  #    ami: ubuntu22
+  #    type: t3a.small
+  #    volSizeGb: 12
+  #    publicIP: true
+  #    tags: {}
+eksClusters: {}
+#  v1eks:
+#    vpc: k8s-vpc
+#    subnets:
+#      - k8s-vpc.subnet-1
+#      - k8s-vpc.subnet-2
+#    clusterNodeGroupSize: 3
+rdsInstances: {}
+lambdaFunctions: {}
+dynamoDBTables: {}
+vpcEndpoints: {}
+allowedPorts:
+  private:
+    - from: 0
+      to: 65535
+      protocol: "tcp"
+  public:
+    - from: 80
+      to: 82
+      protocol: "tcp"
