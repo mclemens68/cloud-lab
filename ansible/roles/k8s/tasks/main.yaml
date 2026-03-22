@@ -1,0 +1,133 @@
+- name: Load AWS YAML file
+  include_vars:
+    file: "{{ aws_config_file }}"
+    name: aws_data
+    
+- name: Copy private ssh key
+  vars:
+    ssh_key: "{{ aws_data.sshKey }}"
+    ssh_file: "{{ ssh_key.split('/')[-1] }}"
+  ansible.builtin.copy:
+    src: "{{ aws_data.sshKey }}"
+    dest: /home/{{ ansible_user }}/.ssh/{{ ssh_file }}
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0600'
+    
+- name: change hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+  become: true
+
+- name: Check if kube-scripts repo directory exists
+  ansible.builtin.stat:
+    path: /home/{{ ansible_user }}/kube-scripts
+  register: kube_scripts_repo_stat
+
+- name: Clone the kube-scripts repository
+  ansible.builtin.git:
+    repo: https://github.com/mclemens68/kube-scripts
+    dest: /home/{{ ansible_user }}/kube-scripts
+    version: HEAD
+  become_user: "{{ ansible_user }}"
+  when: not kube_scripts_repo_stat.stat.exists
+
+- name: Copy kube reset script to home directory
+  ansible.builtin.copy:
+    src: /home/{{ ansible_user }}/kube-scripts/k8s-ubuntu/worker-nodes/reset.sh
+    dest: /home/{{ ansible_user }}/reset.sh
+    remote_src: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  become: true
+
+- name: Install dependencies
+  ansible.builtin.package:
+    name:
+      - unzip
+      - zip
+      - at
+    state: present
+  become: true
+
+- name: Download AWS CLI installer
+  ansible.builtin.get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+  become: true
+
+- name: Unzip AWS CLI installer
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp/
+    remote_src: yes
+  become: true
+
+- name: Install AWS CLI
+  ansible.builtin.command:
+    cmd: /tmp/aws/install --update
+  become: true
+
+- name: Ensure AWS directory exists
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/.aws
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+  become: true
+
+- name: Copy AWS directory
+  ansible.builtin.copy:
+    src: "{{ lookup('env','HOME') }}/.aws/"
+    dest: /home/{{ ansible_user }}/.aws/
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    directory_mode: '0755'
+    mode: '0600'
+  become: true
+
+- name: Download k9s
+  ansible.builtin.get_url:
+    url: https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz
+    dest: /tmp/k9s.tar.gz
+  become: true
+
+- name: Extract k9s tarball
+  ansible.builtin.unarchive:
+    src: /tmp/k9s.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  become: true
+
+- name: Move k9s binary to /usr/local/bin
+  ansible.builtin.command:
+    cmd: mv /tmp/k9s /usr/local/bin/
+  become: true
+
+- name: Clean up k9s tarball
+  ansible.builtin.file:
+    path: /tmp/k9s.tar.gz
+    state: absent
+  become: true
+
+- name: Ensure daily package update at 2am
+  ansible.builtin.cron:
+    name: "Daily apt update and upgrade"
+    minute: "0"
+    hour: "2"
+    job: "sudo apt-get update || true; sudo apt-get -y upgrade"
+    user: ubuntu
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Ensure daily reboot at 3am
+  ansible.builtin.cron:
+    name: "Daily reboot"
+    minute: "0"
+    hour: "3"
+    job: "sudo /sbin/reboot"
+    user: ubuntu
+  become: true
+  when: ansible_facts['os_family'] == 'Debian'

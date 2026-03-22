@@ -19,6 +19,13 @@
   roles:
     - shell_aliases
 
+- name: Setup k8s
+  hosts: k8s
+  vars_files:
+    - vars.yaml
+  roles:
+    - k8s
+
 - name: Setup Demo Jumpbox
   hosts: demo-jumpbox
   vars_files:

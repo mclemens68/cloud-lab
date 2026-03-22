@@ -14,6 +14,8 @@ resource "azurerm_public_ip" "vgw_pip" {
   location            = local.azure_config.location
   resource_group_name = local.azure_config.resourceGroup
   allocation_method   = "Static"
+  sku                 = "Standard"
+  zones               = ["1"]
 }
 
 
@@ -28,7 +30,7 @@ resource "azurerm_virtual_network_gateway" "vng-aws-azure" {
 
   active_active = false
   enable_bgp    = false
-  sku           = "VpnGw1"
+  sku           = "VpnGw1AZ"
 
   ip_configuration {
     name                          = "${each.key}-ip-config"

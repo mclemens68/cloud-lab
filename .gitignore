@@ -15,6 +15,7 @@ ansible/pce.hosts
 ansible/aws.hosts
 ansible/azure.hosts
 ansible/demo-jumpbox.hosts
+ansible/k8s.hosts
 ansible/vars.yaml.*
 !ansible/vars.yaml.demo-jumpbox
 k8s/*
@@ -28,6 +29,8 @@ config-files/*
 !config-files/confidential-example.yaml
 !config-files/demo-jumpbox-aws.yaml
 !config-files/demo-jumpbox-azure.yaml
+!config-files/k8s-aws.yaml
+!config-files/k8s-azure.yaml
 *.zip
 *confidential.yaml
 scripts/*.log

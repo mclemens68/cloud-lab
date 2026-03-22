@@ -18,6 +18,7 @@ bash_aliases:
   #Kubernetes
   - alias kube-nodes='kubectl get nodes -o wide'
   - alias kube-pods=' kubectl get pods --all-namespaces -o wide'
+  - alias kube-dep='kubectl get deployments --all-namespaces -o wide'
   - alias kube-svc='kubectl get svc --all-namespaces -o wide'
   - alias kube-top-nodes='kubectl top nodes'
   - alias kube-top-pods='kubectl top pods -A --containers --sum'

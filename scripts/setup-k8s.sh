@@ -26,21 +26,21 @@ while ! terraform apply -auto-approve -no-color; do
 done
 
 # Navigate to Ansible directory
-#cd $GITHUB/cloud-lab/ansible
+cd $GITHUB/cloud-lab/ansible
 
 # Copy the ansible vars file
-#if [ -f "vars.yaml.$WORKSPACE" ]; then
-#    cp -f vars.yaml.$WORKSPACE vars.yaml
-#    echo "Copying vars.yaml.$WORKSPACE to vars.yaml"
+if [ -f "vars.yaml.$WORKSPACE" ]; then
+    cp -f vars.yaml.$WORKSPACE vars.yaml
+    echo "Copying vars.yaml.$WORKSPACE to vars.yaml"
 
-#else
-#    echo "Warning: vars.yaml.$WORKSPACE does not exist. Skipping copy."
-#fi
+else
+    echo "Warning: vars.yaml.$WORKSPACE does not exist. Skipping copy."
+fi
 
 # Execute Ansible playbooks
-#./01-setup-hosts.sh
-#./05-update-demo-jumpbox.sh
-#./06-setup-demo-jumpbox.sh
+./01-setup-hosts.sh
+./07-update-k8s.sh
+./08-setup-k8s.sh
 
 echo "Script execution completed successfully at $(date)"
 

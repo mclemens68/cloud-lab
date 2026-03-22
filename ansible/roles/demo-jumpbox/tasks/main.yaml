@@ -1,6 +1,6 @@
 - name: Load AWS YAML file
   include_vars:
-    file: "{{ vars.aws_config_file }}"
+    file: "{{ aws_config_file }}"
     name: aws_data
     
 - name: change hostname
@@ -92,6 +92,14 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_facts['lsb']['codename'] }} main"
     state: present
+    update_cache: no
+  when: ansible_facts['os_family'] == 'Debian'
+  become: true
+
+- name: Update apt cache after adding Azure CLI repository (Debian-based systems)
+  ansible.builtin.apt:
+    update_cache: yes
+  failed_when: false
   when: ansible_facts['os_family'] == 'Debian'
   become: true
 
@@ -117,7 +125,7 @@
     name: "Daily apt update and upgrade"
     minute: "0"
     hour: "2"
-    job: "sudo apt update && sudo apt -y upgrade"
+    job: "sudo apt-get update || true; sudo apt-get -y upgrade"
     user: ubuntu
   when: ansible_facts['os_family'] == 'Debian'
   become: true

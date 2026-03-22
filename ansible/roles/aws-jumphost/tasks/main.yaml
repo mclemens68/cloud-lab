@@ -1,6 +1,6 @@
 - name: Load AWS YAML file
   include_vars:
-    file: "{{ vars.aws_config_file }}"
+    file: "{{ aws_config_file }}"
     name: aws_data
 
 - name: Copy private ssh key
@@ -21,11 +21,15 @@
     mode: '0755'
 
 - name: Copy contents to ansible directory on the remote host
-  ansible.posix.synchronize:
-    src: ../../../../ansible  # Adjust this path to the directory you want to copy from, if necessary
-    dest: /home/{{ ansible_user }}
-    rsync_opts:
-      - "--exclude=roles/pce/files"
+  ansible.builtin.copy:
+    src: ../../../../ansible/
+    dest: /home/{{ ansible_user }}/ansible/
+    mode: preserve
+
+- name: Remove pce role files from copied ansible directory
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/ansible/roles/pce/files
+    state: absent
 
 - name: Create the remote terraform configuration directories if it doesn't exist
   file:
@@ -38,12 +42,13 @@
   copy:
     src: "{{ item }}"
     dest: "config-files/{{ item | basename }}"
-  with_items: ["{{ vars.azure_config_file }}", "{{ vars.aws_config_file }}" ]
+  with_items: ["{{ azure_config_file }}", "{{ aws_config_file }}" ]
 
 - name: Install ansible on the remote host if not already installed
   ansible.builtin.shell: |
     if ! command -v ansible > /dev/null; then
-      sudo apt update && sudo apt install ansible -y
+      sudo apt-get update || true
+      sudo apt-get install -y ansible
     fi
   args:
     executable: /bin/bash
@@ -73,7 +78,7 @@
     name: move ansible files to azure jumphost every hour
     minute: "0"
     hour: "*"
-    job: "scp -r /home/ubuntu/ansible/ jumphost02.{{ domain }}:/home/ubuntu/"
+    job: "scp -r /home/ubuntu/ansible/ jumphost02.{{ domain }}:/home/ubuntu/ && ssh jumphost02.{{ domain }} 'rm -rf /home/ubuntu/ansible/roles/pce/files'"
 
 - name: Add to cron - update all other aws servers and azure jumphost every day at 6am
   cron:
@@ -97,3 +102,4 @@
     /usr/bin/ansible-playbook /home/ubuntu/ansible/main.yaml -i /home/ubuntu/ansible/aws.hosts --limit '!aws_jh_pub'
     scp -r /home/ubuntu/config-files/ jumphost02.{{ domain }}:/home/ubuntu/
     scp -r /home/ubuntu/ansible/ jumphost02.{{ domain }}:/home/ubuntu/
+    ssh jumphost02.{{ domain }} 'rm -rf /home/ubuntu/ansible/roles/pce/files'
