@@ -246,7 +246,7 @@ eksClusters:
 rdsInstances:
   rdsdb01:
     engine: mysql
-    engineVersion: 8.0.36
+    engineVersion: "8.4"
     instanceClass: db.t3.micro
     vpc: vpc-1
 lambdaFunctions:

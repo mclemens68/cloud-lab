@@ -1,15 +1,16 @@
 - name: Copy entire .ssh directory
-  ansible.builtin.synchronize:
+  ansible.builtin.copy:
     src: "~/.ssh/"
     dest: "/home/{{ ansible_user }}/.ssh/"
-    recursive: yes
-    owner: yes
-    group: yes
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: preserve
     
 - name: Install ansible on the remote host if not already installed
   ansible.builtin.shell: |
       if ! command -v ansible > /dev/null; then
-        sudo apt update && sudo apt install ansible -y
+        sudo apt-get update || true
+        sudo apt-get install -y ansible
       fi
   args:
     executable: /bin/bash

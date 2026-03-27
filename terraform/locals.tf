@@ -45,6 +45,7 @@ locals {
         cidr_block  = subnet["cidrBlock"]
         public      = subnet["public"]
         az          = "${local.aws_config.region}${subnet["az"]}"
+        tags        = lookup(subnet, "tags", {})
       }
     ]
   ])
@@ -60,6 +61,18 @@ locals {
         vnet_id       = azurerm_virtual_network.vnets[vnet_name].id
         address_space = subnet["addressSpace"]
         nsg = subnet["nsg"]
+      }
+    ]
+  ])
+
+  vpc_endpoints = flatten([
+    for endpoint in local.aws_config.vpcEndpoints : [
+      for table in endpoint.tables : {
+        vpc_name       = endpoint.vpc
+        endpoint_name  = "${endpoint.service}-${table}"
+        service_name   = "com.amazonaws.${local.aws_config.region}.${endpoint.service}"
+        vpc_id         = aws_vpc.vpcs[endpoint.vpc].id
+        route_table_ids = [for rt_key, rt in aws_route_table.public : rt.id if rt.vpc_id == aws_vpc.vpcs[endpoint.vpc].id]
       }
     ]
   ])

@@ -1,0 +1,8 @@
+[k8s]
+{% for instance_name, instance in ec2Instances.items() if instance.tags.type == 'linuxWkld' %}
+{{ instance_name }}.{{domain}}
+{% endfor %}
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'

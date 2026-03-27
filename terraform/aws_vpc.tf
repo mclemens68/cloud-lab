@@ -19,9 +19,12 @@ resource "aws_subnet" "subnets" {
   cidr_block              = each.value.cidr_block
   availability_zone       = each.value.az
   map_public_ip_on_launch = each.value.public
-  tags = {
-    Name = each.key
-  }
+  tags = merge(
+    {
+      Name = each.key
+    },
+    lookup(each.value, "tags", {})
+  )
 }
 
 // Create the SSH key pair

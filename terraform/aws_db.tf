@@ -12,6 +12,8 @@ resource "aws_db_instance" "db_instances" {
   identifier             = each.key
   engine                 = each.value["engine"]
   engine_version         = each.value["engineVersion"]
+  allow_major_version_upgrade = true
+  auto_minor_version_upgrade  = true
   instance_class         = each.value["instanceClass"]
   password               = "dbPassword123" # This is for demo purposes only with no real data
   username               = "dbadmin"       # This is for demo purposes only with no real data

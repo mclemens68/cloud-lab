@@ -1,18 +1,28 @@
 ---
 - name: Load AWS YAML file
   include_vars:
-    file: "{{ vars.aws_config_file }}"
+    file: "{{ aws_config_file }}"
     name: aws_data
 
 - name: Load Azure YAML file
   include_vars:
-    file: "{{ vars.azure_config_file }}"
+    file: "{{ azure_config_file }}"
     name: azure_data
 
 - name: Generate demo-jumpbox.hosts from template
   template:
     src: demo-jumpbox.hosts.j2
     dest: demo-jumpbox.hosts
+  vars:
+    ec2Instances: "{{ aws_data.ec2Instances }}"
+    ssh_key: "{{ aws_data.sshKey }}"
+    domain: >-
+      {{ aws_data.dnsZone if aws_data.dnsSubDomain == '' else aws_data.dnsSubDomain ~ '.' ~ aws_data.dnsZone }}
+
+- name: Generate k8s.hosts from template
+  template:
+    src: k8s.hosts.j2
+    dest: k8s.hosts
   vars:
     ec2Instances: "{{ aws_data.ec2Instances }}"
     ssh_key: "{{ aws_data.sshKey }}"
