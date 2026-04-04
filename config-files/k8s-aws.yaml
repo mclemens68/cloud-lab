@@ -94,6 +94,7 @@ eksClusters: {}
 #      - k8s-vpc.subnet-1
 #      - k8s-vpc.subnet-2
 #    clusterNodeGroupSize: 3
+rosaClusters: {}
 rdsInstances: {}
 lambdaFunctions: {}
 dynamoDBTables: {}

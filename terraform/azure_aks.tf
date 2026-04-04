@@ -9,10 +9,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   default_node_pool {
-    name       = "agentpool"
+    name                        = "agentpool"
     temporary_name_for_rotation = "tmpnodepool"
-    vm_size    = "Standard_A2_v2"
-    node_count = each.value["nodeCount"]
+    vm_size                     = "Standard_A2_v2"
+    node_count                  = each.value["nodeCount"]
     upgrade_settings {
       max_surge = "10%"
     }

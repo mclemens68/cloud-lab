@@ -1,0 +1,68 @@
+---
+######### This section should be updated for each deployment #########
+region: us-east-2
+dnsZone: clemenslabs.com
+dnsSubDomain: "" # No trailing or preceding dots.
+sshKey: ~/.ssh/id_rsa
+s3FlowLogArn: arn:aws:s3:::global-vpc-flow-logs-se15-us-east-2 # No S3 bucket is created so centralized storage can be used. Put the arn of the S3 bucket here.
+route53AWSProfile: "se15" # The AWS profile to be used in your AWS configuration for the route53 DNS
+
+vpcs: 
+  rosa-lab-vpc:
+    logFlows: true
+    dbGroup : false
+    cidrBlock: 10.1.0.0/16
+    subnets:
+      public-a:
+        cidrBlock: 10.1.0.0/20
+        az: a
+        public: true
+      private-a:
+        cidrBlock: 10.1.16.0/20
+        az: a
+        public: false
+transitGateway: false
+transitGateawyRoute: 192.168.0.0/16
+amis:
+  ubuntu24:
+    ami: ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server*
+    owner: '099720109477'
+    user: ubuntu
+ec2Instances: {}
+eksClusters: {}
+rosaClusters:
+  rosa-lab:
+    version: "4.18.35"
+    machineType: m7i-flex.xlarge
+    replicas: 2
+    private: false
+    network:
+      machineCIDR: 10.1.0.0/16
+      publicSubnetRefs:
+        - rosa-lab-vpc.public-a
+      privateSubnetRefs:
+        - rosa-lab-vpc.private-a
+    rosa:
+      operatorRolePrefix: rosa-lab
+      createOidc: true
+      reuseOidc: false
+      oidcId: null
+rdsInstances: {}
+lambdaFunctions: {}
+dynamoDBTables: {}
+vpcEndpoints: {}
+allowedPorts:
+  private:
+    - from: 0
+      to: 65535
+      protocol: "tcp"
+    - from: 0
+      to: 65535
+      protocol: "udp"
+  public:
+    - from: 443
+      to: 443
+      protocol: "tcp"
+    - from: 80
+      to: 80
+      protocol: "tcp"

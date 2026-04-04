@@ -7,14 +7,14 @@ resource "aws_route_table" "private" {
     nat_gateway_id = aws_nat_gateway.ngws[each.key].id
   }
 
-  dynamic route {
+  dynamic "route" {
     for_each = local.aws_config.transitGateway ? [1] : []
     content {
       cidr_block         = local.aws_config.transitGateawyRoute
       transit_gateway_id = aws_ec2_transit_gateway.tgw[0].id
     }
   }
-  
+
   tags = {
     Name = "${each.key}-private-rt"
   }
@@ -29,32 +29,32 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "vgw" {
-  for_each = local.azure_config.vpnConnections
-  route_table_id            = aws_route_table.public[each.value["awsVPC"]].id
-  destination_cidr_block    = each.value["azureNetwork"]
-  gateway_id                = aws_vpn_gateway.azurevpn[each.key].id
+  for_each               = local.azure_config.vpnConnections
+  route_table_id         = aws_route_table.public[each.value["awsVPC"]].id
+  destination_cidr_block = each.value["azureNetwork"]
+  gateway_id             = aws_vpn_gateway.azurevpn[each.key].id
 }
 
 resource "aws_route" "igw" {
-  for_each = local.aws_config.vpcs
-  route_table_id            = aws_route_table.public[each.key].id
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.igws[each.key].id
+  for_each               = local.aws_config.vpcs
+  route_table_id         = aws_route_table.public[each.key].id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igws[each.key].id
 }
 
 resource "aws_route" "tgw" {
-  for_each           = local.aws_config.transitGateway ? local.aws_config.vpcs : {}
-  route_table_id            = aws_route_table.public[each.key].id
-  destination_cidr_block    = local.aws_config.transitGateawyRoute
-  transit_gateway_id = aws_ec2_transit_gateway.tgw[0].id
-  depends_on = [aws_ec2_transit_gateway.tgw, aws_ec2_transit_gateway_vpc_attachment.tgw-attachment]
+  for_each               = local.aws_config.transitGateway ? local.aws_config.vpcs : {}
+  route_table_id         = aws_route_table.public[each.key].id
+  destination_cidr_block = local.aws_config.transitGateawyRoute
+  transit_gateway_id     = aws_ec2_transit_gateway.tgw[0].id
+  depends_on             = [aws_ec2_transit_gateway.tgw, aws_ec2_transit_gateway_vpc_attachment.tgw-attachment]
 }
 
 resource "aws_route_table_association" "public_rta" {
   for_each = {
     for subnet in local.vpc_subnets : "${subnet.vpc_name}.${subnet.subnet_key}" => subnet if subnet.public
   }
-  subnet_id      = aws_subnet.subnets[each.key].id
+  subnet_id      = local.aws_subnets[each.key].id
   route_table_id = aws_route_table.public[each.value["vpc_name"]].id
 }
 
@@ -62,6 +62,6 @@ resource "aws_route_table_association" "private_rta" {
   for_each = {
     for subnet in local.vpc_subnets : "${subnet.vpc_name}.${subnet.subnet_key}" => subnet if subnet.public == false
   }
-  subnet_id      = aws_subnet.subnets[each.key].id
+  subnet_id      = local.aws_subnets[each.key].id
   route_table_id = aws_route_table.private[each.value["vpc_name"]].id
 }

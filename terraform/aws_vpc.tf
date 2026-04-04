@@ -14,6 +14,7 @@ resource "aws_vpc" "vpcs" {
 resource "aws_subnet" "subnets" {
   for_each = {
     for subnet in local.vpc_subnets : "${subnet.vpc_name}.${subnet.subnet_key}" => subnet
+    if !can(regex("rosa", lower(subnet.vpc_name)))
   }
   vpc_id                  = each.value.vpc_id
   cidr_block              = each.value.cidr_block
@@ -25,6 +26,31 @@ resource "aws_subnet" "subnets" {
     },
     lookup(each.value, "tags", {})
   )
+
+}
+
+resource "aws_subnet" "rosa_subnets" {
+  for_each = {
+    for subnet in local.vpc_subnets : "${subnet.vpc_name}.${subnet.subnet_key}" => subnet
+    if can(regex("rosa", lower(subnet.vpc_name)))
+  }
+  vpc_id                  = each.value.vpc_id
+  cidr_block              = each.value.cidr_block
+  availability_zone       = each.value.az
+  map_public_ip_on_launch = each.value.public
+  tags = merge(
+    {
+      Name = each.key
+    },
+    lookup(each.value, "tags", {})
+  )
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+      tags_all,
+    ]
+  }
 }
 
 // Create the SSH key pair
@@ -36,7 +62,7 @@ resource "aws_key_pair" "auth" {
 
 // Enable VPC flow logging for all VPCs
 resource "aws_flow_log" "vpc_flow_log" {
-  for_each = { for k, v in local.aws_config.vpcs : k => v if v.logFlows }
+  for_each             = { for k, v in local.aws_config.vpcs : k => v if v.logFlows }
   log_destination      = local.aws_config.s3FlowLogArn
   log_destination_type = "s3"
   traffic_type         = "ALL"

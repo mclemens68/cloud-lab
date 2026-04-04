@@ -21,7 +21,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   lifecycle {
-    ignore_changes = [ security_rule ]
+    ignore_changes = [security_rule]
   }
 }
 
@@ -35,6 +35,6 @@ resource "azurerm_subnet_network_security_group_association" "baseline_subnet" {
   for_each = {
     for subnet in local.vnet_subnets : "${subnet.vnet_name}.${subnet.subnet_key}" => subnet if subnet.nsg != ""
   }
-  subnet_id = azurerm_subnet.db_subnets[each.key].id
+  subnet_id                 = azurerm_subnet.db_subnets[each.key].id
   network_security_group_id = azurerm_network_security_group.nsg[each.value["nsg"]].id
 }

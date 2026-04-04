@@ -23,7 +23,7 @@ resource "aws_nat_gateway" "ngws" {
   }
   connectivity_type = "public"
   allocation_id     = aws_eip.ngw_eips[each.value["vpc_name"]].id
-  subnet_id         = aws_subnet.subnets[each.value["subnet_name"]].id
+  subnet_id         = local.aws_subnets[each.value["subnet_name"]].id
   depends_on        = [aws_internet_gateway.igws]
   tags = {
     Name = "${each.value["subnet_name"]}-ngw"
@@ -32,13 +32,13 @@ resource "aws_nat_gateway" "ngws" {
 
 // Create 1 transit gateways to connect all the VPCs
 resource "aws_ec2_transit_gateway" "tgw" {
-  count = local.aws_config.transitGateway ? 1 : 0
+  count                          = local.aws_config.transitGateway ? 1 : 0
   description                    = "transit gateway to connect vpcs"
   dns_support                    = "enable"
   vpn_ecmp_support               = "enable"
   auto_accept_shared_attachments = "enable"
   tags = {
-    Name = replace(replace("config-files/${terraform.workspace}-aws.yaml-tgw", "-",""),"_","")
+    Name = replace(replace("config-files/${terraform.workspace}-aws.yaml-tgw", "-", ""), "_", "")
   }
 }
 
@@ -47,11 +47,11 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw-attachment" {
   for_each           = local.aws_config.transitGateway ? local.aws_config.vpcs : {}
   transit_gateway_id = aws_ec2_transit_gateway.tgw[0].id
   vpc_id             = aws_vpc.vpcs[each.key].id
-  subnet_ids         = [for subnetName, v in local.aws_config.vpcs[each.key].subnets : aws_subnet.subnets["${each.key}.${subnetName}"].id]
+  subnet_ids         = [for subnetName, v in local.aws_config.vpcs[each.key].subnets : local.aws_subnets["${each.key}.${subnetName}"].id]
 }
 
 resource "aws_customer_gateway" "azurevpn" {
-  for_each = local.azure_config.vpnConnections
+  for_each   = local.azure_config.vpnConnections
   bgp_asn    = 65000
   ip_address = azurerm_public_ip.vgw_pip[each.key].ip_address
   type       = "ipsec.1"
@@ -63,23 +63,23 @@ resource "aws_customer_gateway" "azurevpn" {
 
 resource "aws_vpn_gateway" "azurevpn" {
   for_each = local.azure_config.vpnConnections
-  vpc_id = aws_vpc.vpcs[each.value["awsVPC"]].id
+  vpc_id   = aws_vpc.vpcs[each.value["awsVPC"]].id
   tags = {
     Name = "azure-vpn-gw"
   }
 }
 
 resource "aws_vpn_connection" "azurevpn" {
-  for_each = local.azure_config.vpnConnections
+  for_each            = local.azure_config.vpnConnections
   customer_gateway_id = aws_customer_gateway.azurevpn[each.key].id
-  vpn_gateway_id = aws_vpn_gateway.azurevpn[each.key].id
-  type = aws_customer_gateway.azurevpn[each.key].type
-  static_routes_only = true
-  
+  vpn_gateway_id      = aws_vpn_gateway.azurevpn[each.key].id
+  type                = aws_customer_gateway.azurevpn[each.key].type
+  static_routes_only  = true
+
 }
 
 resource "aws_vpn_connection_route" "azurevpn" {
-  for_each = local.azure_config.vpnConnections
+  for_each               = local.azure_config.vpnConnections
   destination_cidr_block = each.value["azureNetwork"]
   vpn_connection_id      = aws_vpn_connection.azurevpn[each.key].id
 }

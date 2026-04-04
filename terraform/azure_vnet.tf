@@ -73,9 +73,9 @@ resource "azurerm_route_table" "azure_rt" {
   for_each = {
     for subnet in local.vnet_subnets : "${subnet.vnet_name}.${subnet.subnet_key}" => subnet if subnet.subnet_key == "DBSubnet"
   }
-  name                =  each.key
-  location = local.azure_config.location
-  resource_group_name  = azurerm_resource_group.rg[0].name
+  name                = each.key
+  location            = local.azure_config.location
+  resource_group_name = azurerm_resource_group.rg[0].name
 
   # route {
   #   name                   = "example"
@@ -99,15 +99,15 @@ resource "azurerm_storage_account" "vnet_storage" {
   resource_group_name = local.azure_config.resourceGroup
   location            = local.azure_config.location
 
-  account_tier              = "Standard"
-  account_kind              = "StorageV2"
-  account_replication_type  = "LRS"
+  account_tier             = "Standard"
+  account_kind             = "StorageV2"
+  account_replication_type = "LRS"
 }
 
 module "storage_account" {
   source              = "./modules/storage_lookup"
-  count = local.azure_config.centralLogging ? 1 : 0
-  name = local.azure_config.blobFlowLogName
+  count               = local.azure_config.centralLogging ? 1 : 0
+  name                = local.azure_config.blobFlowLogName
   resource_group_name = local.azure_config.blobFlowLogRG
 }
 
@@ -117,10 +117,10 @@ resource "azurerm_network_watcher_flow_log" "vnet_flow_log" {
   resource_group_name  = "NetworkWatcherRG"
   name                 = each.key
 
-  target_resource_id   = azurerm_virtual_network.vnets[each.key].id
-  storage_account_id   = local.azure_config.centralLogging ? module.storage_account[0].id : azurerm_storage_account.vnet_storage[each.key].id
-  enabled              = true
-  version              = 2
+  target_resource_id = azurerm_virtual_network.vnets[each.key].id
+  storage_account_id = local.azure_config.centralLogging ? module.storage_account[0].id : azurerm_storage_account.vnet_storage[each.key].id
+  enabled            = true
+  version            = 2
 
   retention_policy {
     enabled = true
