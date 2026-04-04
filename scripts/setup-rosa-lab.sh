@@ -12,6 +12,8 @@ POLL_SECONDS=30
 MAX_WAIT_MINUTES=60
 LOGIN_RETRY_SECONDS=20
 LOGIN_MAX_WAIT_MINUTES=10
+POST_LOGIN_POLL_SECONDS=30
+POST_LOGIN_MAX_WAIT_MINUTES=20
 
 log() {
   echo "[$(date)] $*"
@@ -147,11 +149,20 @@ while true; do
 done
 
 # ---------------------------------------------------
-# Optional: get admin credentials
+# Retrieve admin credentials
 # ---------------------------------------------------
 log "Retrieving admin credentials..."
 
+if ! OUTPUT="$(rosa describe cluster --cluster "$CLUSTER_NAME" 2>/dev/null)"; then
+  log "ERROR: Unable to refresh ROSA cluster description before admin login"
+  exit 1
+fi
+
 API_URL="$(echo "$OUTPUT" | awk -F': ' '/^API URL:/ {print $2}' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+if [[ -z "${API_URL:-}" ]]; then
+  log "ERROR: API URL not found in ROSA cluster description"
+  exit 1
+fi
 log "Rotating cluster-admin credentials..."
 rosa delete admin --cluster "$CLUSTER_NAME" --yes >/dev/null 2>&1 || true
 rosa create admin --cluster "$CLUSTER_NAME" >"$ADMIN_OUT" 2>&1
@@ -167,39 +178,117 @@ PASSWORD="$(awk '/^[[:space:]]*oc login /{
 }' "$ADMIN_OUT")"
 
 # ---------------------------------------------------
-# Optional: login + basic health checks
+# Login and wait for cluster convergence
 # ---------------------------------------------------
-if [[ -n "${API_URL:-}" ]]; then
-  log "Attempting oc login..."
+log "Attempting oc login..."
 
-  if [[ -n "${PASSWORD:-}" ]]; then
-    LOGIN_MAX_WAITS=$(( LOGIN_MAX_WAIT_MINUTES * 60 / LOGIN_RETRY_SECONDS ))
-    LOGIN_COUNT=0
+if [[ -z "${PASSWORD:-}" ]]; then
+  log "ERROR: Could not extract password from $ADMIN_OUT"
+  exit 1
+fi
+
+LOGIN_MAX_WAITS=$(( LOGIN_MAX_WAIT_MINUTES * 60 / LOGIN_RETRY_SECONDS ))
+LOGIN_COUNT=0
+
+while true; do
+  if oc login "$API_URL" -u cluster-admin -p "$PASSWORD" >/dev/null 2>&1; then
+    log "cluster-admin login succeeded"
+
+    CURRENT_CONTEXT="$(oc config current-context 2>/dev/null || true)"
+    if [[ -n "${CURRENT_CONTEXT:-}" ]]; then
+      log "Detected current kubeconfig context: $CURRENT_CONTEXT"
+
+      if [[ "$CURRENT_CONTEXT" == "$WORKSPACE" ]]; then
+        log "Current context already matches workspace '$WORKSPACE'; no rename needed"
+      else
+        if oc config get-contexts -o name 2>/dev/null | grep -Fx "$WORKSPACE" >/dev/null 2>&1; then
+          log "Deleting stale kubeconfig context: $WORKSPACE"
+          if ! oc config delete-context "$WORKSPACE" >/dev/null 2>&1; then
+            log "WARNING: Failed to delete stale kubeconfig context: $WORKSPACE"
+          fi
+        fi
+
+        log "Renaming kubeconfig context '$CURRENT_CONTEXT' to '$WORKSPACE'"
+        if ! oc config rename-context "$CURRENT_CONTEXT" "$WORKSPACE" >/dev/null 2>&1; then
+          log "WARNING: Failed to rename kubeconfig context '$CURRENT_CONTEXT' to '$WORKSPACE'"
+        fi
+      fi
+
+      log "Switching to kubeconfig context: $WORKSPACE"
+      if ! oc config use-context "$WORKSPACE" >/dev/null 2>&1; then
+        log "WARNING: Failed to switch to kubeconfig context: $WORKSPACE"
+      fi
+    else
+      log "WARNING: Could not determine current kubeconfig context after login; skipping context rename"
+    fi
+
+    log "Waiting for post-login cluster convergence (nodes + key operators)..."
+    POST_LOGIN_MAX_WAITS=$(( POST_LOGIN_MAX_WAIT_MINUTES * 60 / POST_LOGIN_POLL_SECONDS ))
+    POST_LOGIN_COUNT=0
 
     while true; do
-      if oc login "$API_URL" -u cluster-admin -p "$PASSWORD" >/dev/null 2>&1; then
-        log "Running basic cluster checks..."
+      NODES_OUTPUT="$(oc get nodes --no-headers 2>/dev/null || true)"
+      TOTAL_NODES="$(printf '%s\n' "$NODES_OUTPUT" | sed '/^[[:space:]]*$/d' | wc -l | awk '{print $1}')"
+      READY_NODES="$(printf '%s\n' "$NODES_OUTPUT" | awk '$2 ~ /(^|,)Ready($|,)/ {c++} END {print c+0}')"
 
+      CO_OUTPUT="$(oc get co --no-headers 2>/dev/null || true)"
+      OPERATORS_HEALTHY="true"
+
+      for OPERATOR in dns ingress image-registry storage network; do
+        OP_LINE="$(printf '%s\n' "$CO_OUTPUT" | awk -v op="$OPERATOR" '$1 == op {print; exit}')"
+        if [[ -z "${OP_LINE:-}" ]]; then
+          OPERATORS_HEALTHY="false"
+          log "Operator $OPERATOR status: unavailable"
+          continue
+        fi
+
+        OP_AVAILABLE="$(printf '%s\n' "$OP_LINE" | awk '{print $3}')"
+        OP_DEGRADED="$(printf '%s\n' "$OP_LINE" | awk '{print $5}')"
+        log "Operator $OPERATOR status: Available=$OP_AVAILABLE Degraded=$OP_DEGRADED"
+
+        if [[ "$OP_AVAILABLE" != "True" || "$OP_DEGRADED" != "False" ]]; then
+          OPERATORS_HEALTHY="false"
+        fi
+      done
+
+      log "Post-login convergence check: ready_nodes=$READY_NODES total_nodes=$TOTAL_NODES operators_healthy=$OPERATORS_HEALTHY"
+
+      if [[ "$READY_NODES" -ge 2 && "$OPERATORS_HEALTHY" == "true" ]]; then
+        log "Post-login convergence complete"
+        log "Running basic cluster checks..."
         oc get nodes -o wide || true
         oc get co || true
         oc get pods -A || true
         break
       fi
 
-      LOGIN_COUNT=$((LOGIN_COUNT + 1))
-      if [[ "$LOGIN_COUNT" -ge "$LOGIN_MAX_WAITS" ]]; then
-        log "oc login failed after waiting ${LOGIN_MAX_WAIT_MINUTES} minutes — skipping cluster checks"
-        break
+      POST_LOGIN_COUNT=$((POST_LOGIN_COUNT + 1))
+      if [[ "$POST_LOGIN_COUNT" -ge "$POST_LOGIN_MAX_WAITS" ]]; then
+        log "ERROR: Timed out after ${POST_LOGIN_MAX_WAIT_MINUTES} minutes waiting for cluster convergence"
+        log "Diagnostics: oc get nodes -o wide"
+        oc get nodes -o wide || true
+        log "Diagnostics: oc get co"
+        oc get co || true
+        log "Diagnostics: oc get pods -A"
+        oc get pods -A || true
+        exit 1
       fi
 
-      log "cluster-admin login not active yet; retrying in ${LOGIN_RETRY_SECONDS}s..."
-      sleep "$LOGIN_RETRY_SECONDS"
+      log "Cluster not converged yet; retrying in ${POST_LOGIN_POLL_SECONDS}s..."
+      sleep "$POST_LOGIN_POLL_SECONDS"
     done
-  else
-    log "Could not extract password — skipping oc login"
+
+    break
   fi
-else
-  log "API URL not found — skipping oc login"
-fi
+
+  LOGIN_COUNT=$((LOGIN_COUNT + 1))
+  if [[ "$LOGIN_COUNT" -ge "$LOGIN_MAX_WAITS" ]]; then
+    log "ERROR: oc login failed after waiting ${LOGIN_MAX_WAIT_MINUTES} minutes"
+    exit 1
+  fi
+
+  log "cluster-admin login not active yet; retrying in ${LOGIN_RETRY_SECONDS}s..."
+  sleep "$LOGIN_RETRY_SECONDS"
+done
 
 log "Setup completed successfully"
