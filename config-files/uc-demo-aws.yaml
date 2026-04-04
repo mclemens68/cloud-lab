@@ -243,6 +243,7 @@ eksClusters:
     - vpc-1.subnet-2
     - vpc-1.subnet-3
     clusterNodeGroupSize: 3
+rosaClusters: {}
 rdsInstances:
   rdsdb01:
     engine: mysql

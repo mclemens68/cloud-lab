@@ -124,6 +124,7 @@ ec2Instances:
   #   tags:
   #    type: splunk
 eksClusters: {}
+rosaClusters: {}
 rdsInstances: {}
 lambdaFunctions: {}
 allowedPorts:

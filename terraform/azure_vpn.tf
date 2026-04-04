@@ -29,7 +29,6 @@ resource "azurerm_virtual_network_gateway" "vng-aws-azure" {
   vpn_type = "RouteBased"
 
   active_active = false
-  enable_bgp    = false
   sku           = "VpnGw1AZ"
 
   ip_configuration {

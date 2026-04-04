@@ -1,28 +1,34 @@
 locals {
 
+  aws_credentials_file    = pathexpand("~/.aws/credentials")
+  aws_credentials_content = fileexists(local.aws_credentials_file) ? file(local.aws_credentials_file) : ""
+  aws_profile             = can(regex("\\[${terraform.workspace}\\]", local.aws_credentials_content)) ? terraform.workspace : null
+
   aws_config_temp   = yamldecode(file("../config-files/${terraform.workspace}-aws.yaml"))
   azure_config_temp = yamldecode(file("../config-files/${terraform.workspace}-azure.yaml"))
-  confidential = yamldecode(file("../config-files/confidential.yaml"))
+  confidential      = yamldecode(file("../config-files/confidential.yaml"))
 
 
-# For Azure, set the name of the resource group to correspond to the workspace
+  # For Azure, set the name of the resource group to correspond to the workspace
   azure_config = merge(
-    local.azure_config_temp, 
-    { 
+    local.azure_config_temp,
+    {
       resourceGroup = terraform.workspace
     },
     local.confidential
   )
 
-  aws_config = merge(local.aws_config_temp, local.confidential, {dnsSubWithPrecedingDot = ".${local.aws_config_temp.dnsSubDomain}" })
+  aws_config = merge(local.aws_config_temp, local.confidential, { dnsSubWithPrecedingDot = ".${local.aws_config_temp.dnsSubDomain}" })
+
+  aws_subnets = merge(aws_subnet.subnets, aws_subnet.rosa_subnets)
 
 
-# Everything below creates a map with the vpc name as the key and the value is the list of subnet IDs.
-# This is used in the transit gateway to attach the subnets
+  # Everything below creates a map with the vpc name as the key and the value is the list of subnet IDs.
+  # This is used in the transit gateway to attach the subnets
 
   subnet_ids_by_vpc = {
     for vpc_key, _ in local.aws_config.vpcs : vpc_key => [
-      for subnet_key, _ in local.aws_config.vpcs[vpc_key].subnets : aws_subnet.subnets["${vpc_key}.${subnet_key}"].id
+      for subnet_key, _ in local.aws_config.vpcs[vpc_key].subnets : local.aws_subnets["${vpc_key}.${subnet_key}"].id
     ]
   }
 
@@ -60,7 +66,7 @@ locals {
         subnet_name   = "${vnet_name}.${subnet_key}"
         vnet_id       = azurerm_virtual_network.vnets[vnet_name].id
         address_space = subnet["addressSpace"]
-        nsg = subnet["nsg"]
+        nsg           = subnet["nsg"]
       }
     ]
   ])
@@ -68,10 +74,10 @@ locals {
   vpc_endpoints = flatten([
     for endpoint in local.aws_config.vpcEndpoints : [
       for table in endpoint.tables : {
-        vpc_name       = endpoint.vpc
-        endpoint_name  = "${endpoint.service}-${table}"
-        service_name   = "com.amazonaws.${local.aws_config.region}.${endpoint.service}"
-        vpc_id         = aws_vpc.vpcs[endpoint.vpc].id
+        vpc_name        = endpoint.vpc
+        endpoint_name   = "${endpoint.service}-${table}"
+        service_name    = "com.amazonaws.${local.aws_config.region}.${endpoint.service}"
+        vpc_id          = aws_vpc.vpcs[endpoint.vpc].id
         route_table_ids = [for rt_key, rt in aws_route_table.public : rt.id if rt.vpc_id == aws_vpc.vpcs[endpoint.vpc].id]
       }
     ]

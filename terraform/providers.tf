@@ -1,6 +1,14 @@
+terraform {
+  required_providers {
+    rhcs = {
+      source = "terraform-redhat/rhcs"
+    }
+  }
+}
+
 provider "aws" {
   region  = local.aws_config.region
-  profile = "${terraform.workspace}"
+  profile = local.aws_profile
 }
 
 provider "aws" {
@@ -17,6 +25,12 @@ provider "aws" {
 
 provider "azurerm" {
   features {}
-  subscription_id =  local.azure_config.subscriptionId
-  tenant_id = local.azure_config.tenantId
+  subscription_id = local.azure_config.subscriptionId
+  tenant_id       = local.azure_config.tenantId
 }
+
+provider "rhcs" {
+  token = try(local.aws_config.rhcsToken, "")
+}
+
+

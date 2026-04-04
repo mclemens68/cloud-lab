@@ -5,3 +5,5 @@ admin_cidr_list:
 windowsAdminPwd: "example_password" # Password for the Windows Admin account
 subscriptionId: "123" # Azure Subscription ID
 tenantId: "123" #Azure Tenant ID
+# Red Hat Cloud Services offline token from https://console.redhat.com/openshift/token/rosa
+rhcsToken: "example_token"

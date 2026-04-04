@@ -42,6 +42,7 @@ ec2Instances:
       type: demo-jumpbox
     }
 eksClusters: {}
+rosaClusters: {}
 rdsInstances: {}
 lambdaFunctions: {}
 dynamoDBTables: {}
