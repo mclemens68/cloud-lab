@@ -37,6 +37,7 @@ config-files/*
 *.zip
 *confidential.yaml
 scripts/*
+!scripts/rosa-login.sh
 !scripts/schedule.sh
 !scripts/setup-cs-demo.sh
 !scripts/setup-demo-jumpbox.sh
