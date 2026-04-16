@@ -72,7 +72,7 @@ locals {
   ])
 
   vpc_endpoints = flatten([
-    for endpoint in local.aws_config.vpcEndpoints : [
+    for endpoint in try(local.aws_config.vpcEndpoints, []) : [
       for table in endpoint.tables : {
         vpc_name        = endpoint.vpc
         endpoint_name   = "${endpoint.service}-${table}"
